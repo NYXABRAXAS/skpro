@@ -264,6 +264,7 @@ public class CarLoanController : Controller
         // Store only the last 4 digits + mask. The full Aadhaar is never persisted.
         app.AadhaarLast4 = input.AadhaarNumber[^4..];
         app.AadhaarMasked = $"XXXX XXXX {app.AadhaarLast4}";
+        app.RegisteredMobileMasked = result.Data ?? $"XXXXXX{app.AadhaarLast4}";
         app.AadhaarVerified = false;
         app.AadhaarOtpSent = true;
         app.AadhaarOtpSentAtUtc = DateTimeOffset.UtcNow;

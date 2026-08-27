@@ -27,6 +27,8 @@ public class CarLoanApplication
     public bool AadhaarVerified { get; set; }
     public string AadhaarMasked { get; set; } = string.Empty;
     public string AadhaarLast4 { get; set; } = string.Empty;
+    /// <summary>Masked mobile number registered with the Aadhaar, e.g. "XXXXXX8377".</summary>
+    public string RegisteredMobileMasked { get; set; } = string.Empty;
     public bool AadhaarOtpSent { get; set; }
     public DateTimeOffset? AadhaarOtpSentAtUtc { get; set; }
     public int AadhaarOtpResendCount { get; set; }

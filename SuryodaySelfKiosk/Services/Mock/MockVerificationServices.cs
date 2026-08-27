@@ -31,18 +31,20 @@ public class MockAadhaarService(IOptions<SelfKioskOptions> options) : IAadhaarSe
 {
     private readonly SelfKioskOptions _cfg = options.Value;
 
-    public async Task<ApiResponse<bool>> SendAadhaarOtpAsync(string aadhaarNumber)
+    public async Task<ApiResponse<string>> SendAadhaarOtpAsync(string aadhaarNumber)
     {
         await Task.Delay(1500);
 
         if (string.IsNullOrWhiteSpace(aadhaarNumber) || aadhaarNumber.Length != 12)
         {
-            return ApiResponse<bool>.Fail(
+            return ApiResponse<string>.Fail(
                 "Aadhaar authentication failed. Please check the number and try again.", "AADHAAR_FAILED");
         }
 
         // Real integration: UIDAI generate-OTP -> OTP delivered to the Aadhaar-linked mobile.
-        return ApiResponse<bool>.Ok(true);
+        // Mock: registered mobile is simulated as ending with the same 4 digits as the Aadhaar.
+        var registeredMobileMasked = $"XXXXXX{aadhaarNumber[^4..]}";
+        return ApiResponse<string>.Ok(registeredMobileMasked);
     }
 
     public async Task<ApiResponse<AadhaarKycResult>> VerifyAadhaarOtpAsync(string aadhaarLast4, string otp)

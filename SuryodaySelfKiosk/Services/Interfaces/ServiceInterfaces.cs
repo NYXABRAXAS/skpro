@@ -13,8 +13,11 @@ public interface IOtpService
 
 public interface IAadhaarService
 {
-    /// <summary>Step 1 – triggers UIDAI to send an OTP to the Aadhaar-registered mobile number.</summary>
-    Task<ApiResponse<bool>> SendAadhaarOtpAsync(string aadhaarNumber);
+    /// <summary>
+    /// Step 1 – triggers UIDAI to send an OTP to the Aadhaar-registered mobile number.
+    /// Returns the masked registered mobile number (e.g. "XXXXXX8377").
+    /// </summary>
+    Task<ApiResponse<string>> SendAadhaarOtpAsync(string aadhaarNumber);
 
     /// <summary>Step 2 – validates the Aadhaar OTP and returns the eKYC profile.</summary>
     Task<ApiResponse<AadhaarKycResult>> VerifyAadhaarOtpAsync(string aadhaarLast4, string otp);

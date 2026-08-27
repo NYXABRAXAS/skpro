@@ -45,8 +45,8 @@
     else
     {
         <p class="page-subtitle">
-            Enter the @Model.OtpExpirySeconds-second OTP sent to the mobile number registered with your Aadhaar
-            (<strong>@Model.App.AadhaarMasked</strong>).
+            An OTP has been sent to the mobile number registered with your Aadhaar
+            (<strong>@Model.App.RegisteredMobileMasked</strong>). It is valid for @Model.OtpExpirySeconds seconds.
         </p>
 
         @if (Model.MockMode)
