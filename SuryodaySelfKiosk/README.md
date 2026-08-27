@@ -25,18 +25,23 @@ Then open:
 
 ## Journey
 
-`Kiosk → QR → Start → Consent → Mobile OTP → Aadhaar eKYC → PAN → Vehicle & Loan →
+`Kiosk → QR → Start → Consent → Aadhaar eKYC → Mobile OTP → PAN → Vehicle & Loan →
 Review → Bureau → BRE Eligibility → Result → Customer Decision → Bank Employee Assistance →
 LOS Lead Creation → Success`
 
 ### Mock credentials / data (shown only when `SelfKiosk:MockMode = true`)
 
-| Field           | Value            |
-|-----------------|------------------|
-| OTP             | `123456`         |
-| Aadhaar         | any 12 digits    |
-| PAN             | any valid format, e.g. `ABCDE1234F` |
-| Bank Employee ID| `EMP001`         |
+| Field            | Value            |
+|------------------|------------------|
+| Aadhaar number   | any 12 digits    |
+| Aadhaar OTP      | `123456`         |
+| Mobile number    | any 10 digits (starts 6–9) |
+| Mobile OTP       | `123456`         |
+| PAN              | any valid format, e.g. `ABCDE1234F` |
+| Bank Employee ID | `EMP001`         |
+
+Aadhaar step = enter Aadhaar number → OTP is sent to the Aadhaar-registered mobile → enter that
+OTP → eKYC (name / DOB / address) is returned. Only the last 4 digits of the Aadhaar are ever stored.
 
 On the **Review** screen (mock mode only) a *scenario* selector drives the simulated outcome:
 `Eligible`, `ReferToCredit`, `NotEligible`, `BureauFailure`, `BreFailure`, `LosFailure`.

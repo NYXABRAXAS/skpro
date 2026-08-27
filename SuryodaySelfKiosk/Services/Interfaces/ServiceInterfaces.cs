@@ -13,7 +13,11 @@ public interface IOtpService
 
 public interface IAadhaarService
 {
-    Task<ApiResponse<AadhaarKycResult>> VerifyAadhaarAsync(string aadhaarNumber);
+    /// <summary>Step 1 – triggers UIDAI to send an OTP to the Aadhaar-registered mobile number.</summary>
+    Task<ApiResponse<bool>> SendAadhaarOtpAsync(string aadhaarNumber);
+
+    /// <summary>Step 2 – validates the Aadhaar OTP and returns the eKYC profile.</summary>
+    Task<ApiResponse<AadhaarKycResult>> VerifyAadhaarOtpAsync(string aadhaarLast4, string otp);
 }
 
 public interface IPanService

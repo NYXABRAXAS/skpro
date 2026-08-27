@@ -26,6 +26,10 @@ public class CarLoanApplication
     // --- Aadhaar eKYC (values are masked for display, never store full Aadhaar) ---
     public bool AadhaarVerified { get; set; }
     public string AadhaarMasked { get; set; } = string.Empty;
+    public string AadhaarLast4 { get; set; } = string.Empty;
+    public bool AadhaarOtpSent { get; set; }
+    public DateTimeOffset? AadhaarOtpSentAtUtc { get; set; }
+    public int AadhaarOtpResendCount { get; set; }
     public string CustomerName { get; set; } = string.Empty;
     public string DateOfBirth { get; set; } = string.Empty;
     public string Address { get; set; } = string.Empty;

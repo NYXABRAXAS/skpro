@@ -113,20 +113,20 @@ public class CarLoanController : Controller
         app.AadhaarConsent = input.AadhaarConsent;
         app.BureauConsent = input.BureauConsent;
         app.ConsentCapturedAtUtc = DateTimeOffset.UtcNow;
-        app.JourneyStep = JourneySteps.Mobile;
+        app.JourneyStep = JourneySteps.Aadhaar;
         _state.Save(app);
         _audit.ConsentCaptured(app.ApplicationId, app.AadhaarConsent, app.BureauConsent);
-        return RedirectToAction(nameof(Mobile));
+        return RedirectToAction(nameof(Aadhaar));
     }
 
     // --------------------------------------------------------------------
-    // 3. Mobile + OTP
+    // 4. Mobile + OTP
     // --------------------------------------------------------------------
     [HttpGet("mobile")]
     public IActionResult Mobile()
     {
         var app = _state.GetOrCreate();
-        if (!app.AadhaarConsent || !app.BureauConsent) return RedirectToAction(nameof(Consent));
+        if (!app.AadhaarVerified) return RedirectToAction(nameof(Aadhaar));
 
         var vm = Build(app, JourneySteps.Mobile);
         vm.Mobile = new MobileInput { MobileNumber = app.MobileNumber };
@@ -226,39 +226,108 @@ public class CarLoanController : Controller
         }
 
         app.MobileVerified = true;
-        app.JourneyStep = JourneySteps.Aadhaar;
+        app.JourneyStep = JourneySteps.Pan;
         _state.Save(app);
         _audit.OtpVerified(app.ApplicationId, MaskMobile(app.MobileNumber));
-        return RedirectToAction(nameof(Aadhaar));
+        return RedirectToAction(nameof(Pan));
     }
 
     // --------------------------------------------------------------------
-    // 4. Aadhaar eKYC
+    // 3. Aadhaar eKYC — enter Aadhaar -> OTP to Aadhaar-linked mobile -> verify OTP
     // --------------------------------------------------------------------
     [HttpGet("aadhaar")]
     public IActionResult Aadhaar()
     {
         var app = _state.GetOrCreate();
-        if (!app.MobileVerified) return RedirectToAction(nameof(Mobile));
+        if (!app.AadhaarConsent || !app.BureauConsent) return RedirectToAction(nameof(Consent));
         return View(Build(app, JourneySteps.Aadhaar));
     }
 
-    [HttpPost("aadhaar")]
+    [HttpPost("aadhaar/send")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Aadhaar(AadhaarInput input)
+    public async Task<IActionResult> SendAadhaarOtp(AadhaarInput input)
+    {
+        var app = _state.GetOrCreate();
+        if (!ModelState.IsValid)
+        {
+            var vm = Build(app, JourneySteps.Aadhaar);
+            return View(nameof(Aadhaar), vm); // never echo the entered Aadhaar back
+        }
+
+        var result = await _aadhaar.SendAadhaarOtpAsync(input.AadhaarNumber);
+        if (!result.Success)
+        {
+            ModelState.AddModelError(string.Empty, result.CustomerMessage ?? "Aadhaar authentication failed. Please try again.");
+            return View(nameof(Aadhaar), Build(app, JourneySteps.Aadhaar));
+        }
+
+        // Store only the last 4 digits + mask. The full Aadhaar is never persisted.
+        app.AadhaarLast4 = input.AadhaarNumber[^4..];
+        app.AadhaarMasked = $"XXXX XXXX {app.AadhaarLast4}";
+        app.AadhaarVerified = false;
+        app.AadhaarOtpSent = true;
+        app.AadhaarOtpSentAtUtc = DateTimeOffset.UtcNow;
+        app.AadhaarOtpResendCount = 0;
+        _state.Save(app);
+        return RedirectToAction(nameof(Aadhaar));
+    }
+
+    [HttpPost("aadhaar/resend")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResendAadhaarOtp()
+    {
+        var app = _state.GetOrCreate();
+        if (!app.AadhaarOtpSent) return RedirectToAction(nameof(Aadhaar));
+
+        if (app.AadhaarOtpResendCount >= _cfg.MaxOtpResendAttempts)
+        {
+            TempData["OtpError"] = "You have reached the maximum number of OTP resend attempts. Please start again.";
+            return RedirectToAction(nameof(Aadhaar));
+        }
+
+        await _aadhaar.SendAadhaarOtpAsync(new string('0', 8) + app.AadhaarLast4);
+        app.AadhaarOtpResendCount++;
+        app.AadhaarOtpSentAtUtc = DateTimeOffset.UtcNow;
+        _state.Save(app);
+        return RedirectToAction(nameof(Aadhaar));
+    }
+
+    [HttpPost("aadhaar/change")]
+    [ValidateAntiForgeryToken]
+    public IActionResult ChangeAadhaar()
+    {
+        var app = _state.GetOrCreate();
+        app.AadhaarOtpSent = false;
+        app.AadhaarVerified = false;
+        app.AadhaarOtpResendCount = 0;
+        app.AadhaarOtpSentAtUtc = null;
+        _state.Save(app);
+        return RedirectToAction(nameof(Aadhaar));
+    }
+
+    [HttpPost("aadhaar/verify")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> VerifyAadhaarOtp(OtpInput input)
     {
         var app = _state.GetOrCreate();
         var vm = Build(app, JourneySteps.Aadhaar);
-        vm.Aadhaar = new AadhaarInput(); // never echo the entered Aadhaar back
+        vm.Otp = input;
 
-        if (!ModelState.IsValid)
-            return View(vm);
+        if (!app.AadhaarOtpSent) return RedirectToAction(nameof(Aadhaar));
+        if (!ModelState.IsValid) return View(nameof(Aadhaar), vm);
 
-        var result = await _aadhaar.VerifyAadhaarAsync(input.AadhaarNumber);
+        var expiry = app.AadhaarOtpSentAtUtc?.AddSeconds(_cfg.OtpExpirySeconds);
+        if (expiry is null || DateTimeOffset.UtcNow > expiry)
+        {
+            ModelState.AddModelError(string.Empty, "OTP has expired. Please request a new OTP.");
+            return View(nameof(Aadhaar), vm);
+        }
+
+        var result = await _aadhaar.VerifyAadhaarOtpAsync(app.AadhaarLast4, input.Otp);
         if (!result.Success || result.Data is null)
         {
             ModelState.AddModelError(string.Empty, result.CustomerMessage ?? "Aadhaar authentication failed. Please try again.");
-            return View(vm);
+            return View(nameof(Aadhaar), vm);
         }
 
         app.AadhaarVerified = true;
@@ -266,10 +335,10 @@ public class CarLoanController : Controller
         app.CustomerName = result.Data.CustomerName;
         app.DateOfBirth = result.Data.DateOfBirth;
         app.Address = result.Data.Address;
-        app.JourneyStep = JourneySteps.Pan;
+        app.JourneyStep = JourneySteps.Mobile;
         _state.Save(app);
         _audit.AadhaarVerified(app.ApplicationId);
-        return RedirectToAction(nameof(Pan));
+        return RedirectToAction(nameof(Mobile));
     }
 
     // --------------------------------------------------------------------
@@ -280,6 +349,7 @@ public class CarLoanController : Controller
     {
         var app = _state.GetOrCreate();
         if (!app.AadhaarVerified) return RedirectToAction(nameof(Aadhaar));
+        if (!app.MobileVerified) return RedirectToAction(nameof(Mobile));
         return View(Build(app, JourneySteps.Pan));
     }
 

@@ -27,25 +27,39 @@ public class MockOtpService(IOptions<SelfKioskOptions> options) : IOtpService
     }
 }
 
-public class MockAadhaarService : IAadhaarService
+public class MockAadhaarService(IOptions<SelfKioskOptions> options) : IAadhaarService
 {
-    public async Task<ApiResponse<AadhaarKycResult>> VerifyAadhaarAsync(string aadhaarNumber)
+    private readonly SelfKioskOptions _cfg = options.Value;
+
+    public async Task<ApiResponse<bool>> SendAadhaarOtpAsync(string aadhaarNumber)
     {
-        await Task.Delay(2000);
+        await Task.Delay(1500);
 
         if (string.IsNullOrWhiteSpace(aadhaarNumber) || aadhaarNumber.Length != 12)
         {
-            return ApiResponse<AadhaarKycResult>.Fail(
-                "Aadhaar authentication failed. Please try again.", "AADHAAR_FAILED");
+            return ApiResponse<bool>.Fail(
+                "Aadhaar authentication failed. Please check the number and try again.", "AADHAAR_FAILED");
         }
 
-        var last4 = aadhaarNumber[^4..];
+        // Real integration: UIDAI generate-OTP -> OTP delivered to the Aadhaar-linked mobile.
+        return ApiResponse<bool>.Ok(true);
+    }
+
+    public async Task<ApiResponse<AadhaarKycResult>> VerifyAadhaarOtpAsync(string aadhaarLast4, string otp)
+    {
+        await Task.Delay(2000);
+
+        if (otp != _cfg.MockOtp)
+        {
+            return ApiResponse<AadhaarKycResult>.Fail("Invalid OTP. Please try again.", "AADHAAR_OTP_INVALID");
+        }
+
         return ApiResponse<AadhaarKycResult>.Ok(new AadhaarKycResult
         {
             CustomerName = "Rajesh Kumar",
             DateOfBirth = "15/08/1988",
             Address = "Flat 4B, Sunrise Residency, MG Road, Bengaluru, Karnataka - 560001",
-            AadhaarMasked = $"XXXX XXXX {last4}"
+            AadhaarMasked = $"XXXX XXXX {aadhaarLast4}"
         });
     }
 }

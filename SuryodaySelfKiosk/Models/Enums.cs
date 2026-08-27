@@ -20,8 +20,8 @@ public static class JourneySteps
     public static readonly (string Key, string Label)[] Milestones =
     {
         (Consent, "Consent"),
-        (Mobile, "Mobile"),
         (Aadhaar, "Aadhaar"),
+        (Mobile, "Mobile"),
         (Pan, "PAN"),
         (Vehicle, "Vehicle"),
         (Eligibility, "Eligibility"),

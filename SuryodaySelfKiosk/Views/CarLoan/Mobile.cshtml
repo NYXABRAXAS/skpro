@@ -12,6 +12,14 @@
 <div class="card-surface">
     <h1 class="page-title">Verify Your Mobile Number</h1>
 
+    @if (Model.App.AadhaarVerified)
+    {
+        <div class="alert alert-success">
+            <span aria-hidden="true">✓</span>
+            <span>Aadhaar verified — @Model.App.CustomerName (@Model.App.AadhaarMasked).</span>
+        </div>
+    }
+
     @if (TempData["OtpError"] is string te)
     {
         <div class="alert alert-danger">@te</div>
@@ -81,5 +89,5 @@
         </form>
     }
 
-    <a class="back-link" href="/car-loan/consent">&larr; Back</a>
+    <a class="back-link" href="/car-loan/aadhaar">&larr; Back</a>
 </div>
