@@ -1,0 +1,24 @@
+@inject Microsoft.Extensions.Options.IOptions<SelfKioskOptions> KioskOptions
+@{
+    var cfg = KioskOptions.Value;
+    var imgDir = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+    // Official raster asset wins; otherwise the bundled brand SVG; otherwise a text fallback.
+    string? logo = System.IO.File.Exists(System.IO.Path.Combine(imgDir, "suryoday-logo.png")) ? "~/images/suryoday-logo.png"
+                 : System.IO.File.Exists(System.IO.Path.Combine(imgDir, "suryoday-logo.svg")) ? "~/images/suryoday-logo.svg"
+                 : null;
+}
+<header class="app-header">
+    <div class="inner">
+        <a class="brand" href="/" aria-label="@cfg.BankName home">
+            @if (logo is not null)
+            {
+                <img src="@Url.Content(logo)" alt="@cfg.BankName – A Bank of Smiles" />
+            }
+            else
+            {
+                <span class="fallback-logo"><span class="sun" aria-hidden="true"></span>@cfg.BankName</span>
+            }
+        </a>
+        <span class="product-tag">@cfg.ProductName Eligibility</span>
+    </div>
+</header>

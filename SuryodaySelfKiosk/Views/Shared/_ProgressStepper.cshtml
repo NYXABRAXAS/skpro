@@ -1,0 +1,42 @@
+@model StepViewModel
+@{
+    var milestones = JourneySteps.Milestones;
+
+    // Map the fine-grained journey step onto one of the 7 customer milestones.
+    int activeIndex = Model.CurrentStep switch
+    {
+        JourneySteps.Start => 0,
+        JourneySteps.Consent => 0,
+        JourneySteps.Mobile => 1,
+        JourneySteps.Aadhaar => 2,
+        JourneySteps.Pan => 3,
+        JourneySteps.Vehicle => 4,
+        JourneySteps.Review => 4,
+        JourneySteps.Bureau => 5,
+        JourneySteps.Eligibility => 5,
+        JourneySteps.Decision => 6,
+        JourneySteps.EmployeeAssistance => 6,
+        JourneySteps.Submitted => 6,
+        _ => 0
+    };
+    var total = milestones.Length;
+    var current = milestones[activeIndex];
+    var pct = (int)Math.Round((activeIndex + 1) / (double)total * 100);
+}
+<nav class="stepper" aria-label="Application progress">
+    <div class="mobile-line">
+        Step @(activeIndex + 1) of @total
+        <small>@current.Label</small>
+    </div>
+    <div class="bar" role="progressbar" aria-valuenow="@pct" aria-valuemin="0" aria-valuemax="100">
+        <span style="width:@(pct)%"></span>
+    </div>
+
+    <ol class="track">
+        @for (var i = 0; i < total; i++)
+        {
+            var cls = i < activeIndex ? "node done" : i == activeIndex ? "node active" : "node";
+            <li class="@cls">@milestones[i].Label</li>
+        }
+    </ol>
+</nav>

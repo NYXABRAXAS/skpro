@@ -1,0 +1,45 @@
+@model StepViewModel
+@{
+    ViewData["Title"] = "Consent & Verification";
+    ViewData["StepModel"] = Model;
+    ViewData["EnableTimeout"] = true;
+}
+
+<div class="card-surface">
+    <h1 class="page-title">Consent &amp; Verification</h1>
+    <p class="page-subtitle">Please review and accept the following to check your car loan eligibility.</p>
+
+    <div class="info-panel">
+        By continuing you agree to our
+        <a href="#" onclick="return false;">Terms &amp; Conditions</a> and
+        <a href="#" onclick="return false;">Privacy Policy</a>.
+        Your information is used only to evaluate your car loan eligibility.
+    </div>
+
+    <form method="post" action="/car-loan/consent" data-consent-form>
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="All" class="text-danger"></div>
+
+        <label class="consent-item">
+            <input type="checkbox" name="AadhaarConsent" value="true" data-mandatory
+                   checked="@Model.Consent.AadhaarConsent" />
+            <span class="txt">
+                <strong>Aadhaar eKYC</strong><br />
+                I provide my consent for Aadhaar based authentication / eKYC for the purpose of processing my car loan application.
+            </span>
+        </label>
+
+        <label class="consent-item">
+            <input type="checkbox" name="BureauConsent" value="true" data-mandatory
+                   checked="@Model.Consent.BureauConsent" />
+            <span class="txt">
+                <strong>Credit Bureau Check</strong><br />
+                I provide my consent to obtain my credit information for evaluating my car loan eligibility.
+            </span>
+        </label>
+
+        <div class="btn-row">
+            <button type="submit" class="btn btn-cta" data-consent-submit disabled>Continue</button>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,49 @@
+@inject Microsoft.Extensions.Options.IOptions<SelfKioskOptions> KioskOptions
+@{
+    var cfg = KioskOptions.Value;
+    var stepModel = ViewData["StepModel"] as StepViewModel;
+    var enableTimeout = (bool?)ViewData["EnableTimeout"] ?? false;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>@(ViewData["Title"] ?? "Car Loan Eligibility") · @cfg.BankName</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/suryoday-theme.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body data-reset-url="/car-loan/reset" data-session-timeout="@(enableTimeout ? cfg.SessionTimeoutSeconds : 0)">
+<div class="app-shell">
+    @if (cfg.MockMode)
+    {
+        <partial name="_MockBanner" />
+    }
+    <partial name="_Header" />
+
+    <main class="app-main">
+        @if (stepModel is not null)
+        {
+            <partial name="_ProgressStepper" model="stepModel" />
+        }
+        @RenderBody()
+    </main>
+
+    <partial name="_Footer" />
+</div>
+
+@if (enableTimeout)
+{
+    <partial name="_SessionTimeoutModal" />
+}
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+<script src="~/js/otp.js" asp-append-version="true"></script>
+<script src="~/js/kiosk.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

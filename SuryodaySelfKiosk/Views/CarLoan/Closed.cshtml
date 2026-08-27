@@ -1,0 +1,19 @@
+@model StepViewModel
+@{
+    ViewData["Title"] = "Application Closed";
+    ViewData["EnableTimeout"] = false;
+}
+
+<div class="card-surface" style="text-align:center;">
+    <div class="result-icon refer" aria-hidden="true">✓</div>
+    <h1 class="page-title">Application Closed</h1>
+    <p class="page-subtitle">
+        Thank you for your interest. Your application has been closed as per your choice.
+    </p>
+    <div class="readonly-block" style="text-align:left;">
+        <span class="l">Status</span><div class="v">Rejected by Customer</div>
+    </div>
+    <div class="btn-row">
+        <a href="/car-loan/reset" class="btn btn-cta">Done</a>
+    </div>
+</div>

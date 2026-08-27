@@ -1,0 +1,75 @@
+@model StepViewModel
+@{
+    ViewData["Title"] = "Eligibility Result";
+    ViewData["StepModel"] = Model;
+    ViewData["EnableTimeout"] = true;
+    var a = Model.App;
+    string INR(decimal d) => "₹ " + d.ToString("#,##0", System.Globalization.CultureInfo.GetCultureInfo("en-IN"));
+}
+
+<div class="card-surface">
+@if (a.Decision == Decisions.Eligible)
+{
+    <div style="text-align:center;">
+        <div class="result-icon ok" aria-hidden="true">✓</div>
+        <h1 class="page-title">Congratulations!</h1>
+        <p class="page-subtitle">You are eligible to proceed with your car loan application.</p>
+    </div>
+
+    <div class="amount-cards">
+        <div class="amount-card">
+            <div class="l">Requested Loan Amount</div>
+            <div class="v">@INR(a.RequiredLoanAmount)</div>
+        </div>
+        <div class="amount-card hi">
+            <div class="l">Eligible Loan Amount</div>
+            <div class="v">@INR(a.EligibleAmount)</div>
+        </div>
+    </div>
+
+    <p style="text-align:center;color:var(--muted);">Would you like to proceed with your application?</p>
+
+    <form method="post" action="/car-loan/decision">
+        @Html.AntiForgeryToken()
+        <div class="btn-row">
+            <button type="submit" name="customerDecision" value="Proceed" class="btn btn-cta">Proceed</button>
+            <button type="submit" name="customerDecision" value="NotInterested" class="btn btn-ghost">Not Interested</button>
+        </div>
+    </form>
+}
+else if (a.Decision == Decisions.ReferToCredit)
+{
+    <div style="text-align:center;">
+        <div class="result-icon refer" aria-hidden="true">⏳</div>
+        <h1 class="page-title">Your application requires additional evaluation</h1>
+    </div>
+    <div class="info-panel" style="text-align:center;">
+        Thank you for submitting your application. It requires additional evaluation, and a dedicated car loan expert will get back to you shortly.
+    </div>
+    <form method="post" action="/car-loan/refer-submit">
+        @Html.AntiForgeryToken()
+        <div class="btn-row">
+            <button type="submit" class="btn btn-primary">Submit for Expert Review</button>
+        </div>
+    </form>
+    <form method="post" action="/car-loan/decision" style="text-align:center;">
+        @Html.AntiForgeryToken()
+        <button type="submit" name="customerDecision" value="NotInterested" class="btn btn-ghost">Not Interested</button>
+    </form>
+}
+else
+{
+    <div style="text-align:center;">
+        <div class="result-icon no" aria-hidden="true">✕</div>
+        <h1 class="page-title">We're sorry</h1>
+        <p class="page-subtitle">Based on the information provided, we are unable to offer eligibility at this time.</p>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(a.DeclineReason))
+    {
+        <div class="info-panel" style="text-align:center;">@a.DeclineReason</div>
+    }
+    <div class="btn-row">
+        <a href="/car-loan/reset" class="btn btn-outline">Done</a>
+    </div>
+}
+</div>

@@ -1,0 +1,32 @@
+@model StepViewModel
+@{
+    ViewData["Title"] = "Application Submitted";
+    ViewData["StepModel"] = Model;
+    ViewData["EnableTimeout"] = false;
+    var a = Model.App;
+    var allocationLabel = a.AllocationType == AllocationTypes.Employee
+        ? $"Sales Employee ({a.BankEmployeeName})"
+        : "ASM (Normal Allocation)";
+}
+
+<div class="card-surface" style="text-align:center;">
+    <div class="result-icon ok" aria-hidden="true">✓</div>
+    <h1 class="page-title">Application Submitted Successfully</h1>
+    <p class="page-subtitle">Your application has been submitted successfully.</p>
+
+    <div class="readonly-block" style="text-align:left;">
+        <span class="l">Application Reference Number</span>
+        <div class="v" style="font-size:1.2rem;letter-spacing:1px;">@a.LosLeadId</div>
+    </div>
+    <div class="readonly-block" style="text-align:left;">
+        <span class="l">Allocation</span><div class="v">@allocationLabel</div>
+    </div>
+    @if (a.ReferStatus)
+    {
+        <div class="info-panel">A dedicated car loan expert will review your application and get back to you shortly.</div>
+    }
+
+    <div class="btn-row">
+        <a href="/car-loan/reset" class="btn btn-cta">Done</a>
+    </div>
+</div>

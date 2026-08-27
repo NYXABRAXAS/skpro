@@ -1,0 +1,32 @@
+@model StepViewModel
+@{
+    ViewData["Title"] = "Aadhaar Verification";
+    ViewData["StepModel"] = Model;
+    ViewData["EnableTimeout"] = true;
+}
+
+<div class="card-surface">
+    <h1 class="page-title">Aadhaar Verification</h1>
+    <p class="page-subtitle">We will authenticate your Aadhaar using an OTP sent by UIDAI to your Aadhaar-registered mobile number.</p>
+
+    @if (Model.MockMode)
+    {
+        <div class="info-panel">Demo mode: enter any 12 digit number (e.g. <strong>123412341234</strong>).</div>
+    }
+
+    <form method="post" action="/car-loan/aadhaar">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="field">
+            <label for="AadhaarNumber">Enter Aadhaar Number</label>
+            <input class="input masked" id="AadhaarNumber" name="AadhaarNumber" inputmode="numeric"
+                   data-numeric="12" autocomplete="off" placeholder="XXXX XXXX XXXX" />
+            <span class="hint">Your Aadhaar number is masked and never stored or displayed in full.</span>
+        </div>
+        <div class="btn-row">
+            <button type="submit" class="btn btn-cta">Verify Aadhaar</button>
+        </div>
+    </form>
+
+    <a class="back-link" href="/car-loan/mobile">&larr; Back</a>
+</div>

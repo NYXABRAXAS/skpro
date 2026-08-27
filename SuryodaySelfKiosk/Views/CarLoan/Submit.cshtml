@@ -1,0 +1,35 @@
+@model StepViewModel
+@{
+    ViewData["Title"] = "Submitting Your Application";
+    ViewData["StepModel"] = Model;
+    ViewData["EnableTimeout"] = true;
+    var error = TempData["ProcessingError"] as string;
+}
+
+<div class="card-surface processing">
+    @if (error is not null)
+    {
+        <div class="result-icon no" aria-hidden="true">!</div>
+        <h1 class="page-title">We could not submit your application</h1>
+        <p class="page-subtitle">@error</p>
+        <form method="post" action="/car-loan/submit">
+            @Html.AntiForgeryToken()
+            <div class="btn-row"><button type="submit" class="btn btn-cta">Try Again</button></div>
+        </form>
+    }
+    else
+    {
+        <h1 class="page-title">Submitting Your Application</h1>
+        <div class="spinner" aria-hidden="true"></div>
+        <p class="page-subtitle">Creating your car loan lead. Please wait.</p>
+        <form method="post" action="/car-loan/submit" data-auto-submit="3000">
+            @Html.AntiForgeryToken()
+        </form>
+        <noscript>
+            <form method="post" action="/car-loan/submit">
+                @Html.AntiForgeryToken()
+                <div class="btn-row"><button type="submit" class="btn btn-cta">Continue</button></div>
+            </form>
+        </noscript>
+    }
+</div>

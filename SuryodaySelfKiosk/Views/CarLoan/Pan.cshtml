@@ -1,0 +1,42 @@
+@model StepViewModel
+@{
+    ViewData["Title"] = "PAN Verification";
+    ViewData["StepModel"] = Model;
+    ViewData["EnableTimeout"] = true;
+}
+
+<div class="card-surface">
+    <h1 class="page-title">PAN Verification</h1>
+
+    <div class="alert alert-success">
+        <span aria-hidden="true">✓</span>
+        <span>Aadhaar verified successfully (@Model.App.AadhaarMasked).</span>
+    </div>
+
+    <p class="page-subtitle">The following details were fetched from your Aadhaar eKYC.</p>
+
+    <div class="readonly-block"><span class="l">Customer Name</span><div class="v">@Model.App.CustomerName</div></div>
+    <div class="readonly-block"><span class="l">Date of Birth</span><div class="v">@Model.App.DateOfBirth</div></div>
+    <div class="readonly-block"><span class="l">Address</span><div class="v">@Model.App.Address</div></div>
+
+    <hr style="border:0;border-top:1px solid var(--border);margin:20px 0;" />
+
+    <p class="page-subtitle">Now enter your PAN to continue.</p>
+
+    <form method="post" action="/car-loan/pan">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="field">
+            <label for="PanNumber">Enter PAN Number</label>
+            <input class="input" id="PanNumber" name="PanNumber" data-uppercase maxlength="10"
+                   autocomplete="off" placeholder="ABCDE1234F" value="@Model.Pan.PanNumber"
+                   style="text-transform:uppercase;letter-spacing:2px;" />
+            <span class="hint">Format: five letters, four digits, one letter.</span>
+        </div>
+        <div class="btn-row">
+            <button type="submit" class="btn btn-cta">Verify PAN</button>
+        </div>
+    </form>
+
+    <a class="back-link" href="/car-loan/aadhaar">&larr; Back</a>
+</div>

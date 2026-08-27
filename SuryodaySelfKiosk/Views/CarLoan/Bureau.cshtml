@@ -1,0 +1,44 @@
+@model StepViewModel
+@{
+    ViewData["Title"] = "Checking Your Credit Profile";
+    ViewData["StepModel"] = Model;
+    ViewData["EnableTimeout"] = true;
+    var error = TempData["ProcessingError"] as string;
+}
+
+<div class="card-surface processing">
+    @if (error is not null)
+    {
+        <div class="result-icon no" aria-hidden="true">!</div>
+        <h1 class="page-title">Something went wrong</h1>
+        <p class="page-subtitle">@error</p>
+        <form method="post" action="/car-loan/bureau">
+            @Html.AntiForgeryToken()
+            <div class="btn-row">
+                <button type="submit" class="btn btn-cta">Try Again</button>
+                <a href="/car-loan/review" class="btn btn-outline">Back to Review</a>
+            </div>
+        </form>
+    }
+    else
+    {
+        <h1 class="page-title">Checking Your Credit Profile</h1>
+        <div class="spinner" aria-hidden="true"></div>
+        <p class="page-subtitle">This will only take a few seconds. Please don't close this screen.</p>
+        <ul class="check-list">
+            <li class="ok">Application details verified</li>
+            <li class="ok">Consent verified</li>
+            <li class="pending">Checking credit profile</li>
+            <li class="pending">Calculating eligibility</li>
+        </ul>
+        <form method="post" action="/car-loan/bureau" data-auto-submit="3200">
+            @Html.AntiForgeryToken()
+        </form>
+        <noscript>
+            <form method="post" action="/car-loan/bureau">
+                @Html.AntiForgeryToken()
+                <div class="btn-row"><button type="submit" class="btn btn-cta">Continue</button></div>
+            </form>
+        </noscript>
+    }
+</div>

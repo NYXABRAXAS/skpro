@@ -1,0 +1,45 @@
+@model KioskHomeViewModel
+@{
+    ViewData["Title"] = "Check Your Car Loan Eligibility";
+    Layout = "_KioskLayout";
+}
+
+<div class="kiosk-topbar">
+    <img class="kiosk-logo" src="~/images/suryoday-logo.svg" alt="@Model.BankName – A Bank of Smiles" />
+    <span class="product-tag">@Model.ProductName Eligibility</span>
+</div>
+
+<main class="kiosk-main">
+    <div class="kiosk-hero">
+        <h1>Check Your Car Loan Eligibility</h1>
+        <p>Get started with your New or Used Car Loan application.</p>
+    </div>
+
+    <div class="kiosk-options">
+        <form method="post" action="/car-loan/start">
+            @Html.AntiForgeryToken()
+            <button class="kiosk-option" type="submit" name="vehicleType" value="New">
+                <span class="ic" aria-hidden="true">🚗</span>
+                NEW CAR LOAN
+            </button>
+        </form>
+        <form method="post" action="/car-loan/start">
+            @Html.AntiForgeryToken()
+            <button class="kiosk-option" type="submit" name="vehicleType" value="Used">
+                <span class="ic" aria-hidden="true">🚙</span>
+                USED CAR LOAN
+            </button>
+        </form>
+    </div>
+
+    <div class="kiosk-qr-card">
+        <div class="scan-label">SCAN TO APPLY</div>
+        <img src="@Model.QrDataUri" alt="QR code to open the car loan application on your mobile phone" />
+        <p class="scan-help">Scan with your mobile phone to continue your application</p>
+        <p class="journey-url">@Model.JourneyUrl</p>
+    </div>
+
+    <a class="kiosk-start-btn" href="/car-loan/start">Start Application</a>
+</main>
+
+<footer class="kiosk-footer">SECURE · FAST · SIMPLE · A BANK OF SMILES</footer>

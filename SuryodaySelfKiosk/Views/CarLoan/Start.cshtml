@@ -1,0 +1,38 @@
+@model StepViewModel
+@{
+    ViewData["Title"] = "Your Dream Car Starts Here";
+    ViewData["EnableTimeout"] = true;
+}
+
+<div class="card-surface">
+    <h1 class="page-title">Your Dream Car Starts Here</h1>
+    <p class="page-subtitle">Check your eligibility for a New or Used Car Loan in a few simple steps.</p>
+
+    <form method="post" action="/car-loan/start" data-choice-form>
+        @Html.AntiForgeryToken()
+        <div class="choice-grid" data-choice-group>
+            <label class="choice-card" tabindex="0">
+                <input type="radio" name="vehicleType" value="New"
+                       checked="@(Model.App.VehicleType != VehicleTypes.Used)" />
+                <span class="ic" aria-hidden="true">🚗</span>
+                <span class="t">New Car Loan</span>
+                <span class="d">Loan for a brand new car</span>
+            </label>
+            <label class="choice-card" tabindex="0">
+                <input type="radio" name="vehicleType" value="Used"
+                       checked="@(Model.App.VehicleType == VehicleTypes.Used)" />
+                <span class="ic" aria-hidden="true">🚙</span>
+                <span class="t">Used Car Loan</span>
+                <span class="d">Loan for a pre-owned car</span>
+            </label>
+        </div>
+
+        <div class="btn-row">
+            <button type="submit" class="btn btn-cta">Check Eligibility</button>
+        </div>
+    </form>
+
+    <div class="info-panel" style="margin-top:18px;">
+        You will need your <strong>mobile number</strong>, <strong>Aadhaar</strong> and <strong>PAN</strong> to complete the eligibility check.
+    </div>
+</div>

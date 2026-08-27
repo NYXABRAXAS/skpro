@@ -1,0 +1,53 @@
+@model StepViewModel
+@{
+    ViewData["Title"] = "Bank Employee Assistance";
+    ViewData["StepModel"] = Model;
+    ViewData["EnableTimeout"] = true;
+    var askId = Model.App.AssistedByBankEmployee == "Yes";
+}
+
+<div class="card-surface">
+    <h1 class="page-title">Bank Employee Assistance</h1>
+
+    @if (!askId)
+    {
+        <p class="page-subtitle">Are you assisted by any bank employee?</p>
+        <form method="post" action="/car-loan/employee-assistance">
+            @Html.AntiForgeryToken()
+            <div class="btn-row inline">
+                <button type="submit" name="assisted" value="Yes" class="btn btn-primary">YES</button>
+                <button type="submit" name="assisted" value="No" class="btn btn-outline">NO</button>
+            </div>
+        </form>
+        <div class="info-panel" style="margin-top:18px;">
+            Choosing <strong>NO</strong> routes your application through the normal allocation process (ASM).
+        </div>
+    }
+    else
+    {
+        <p class="page-subtitle">Please enter the Bank Employee ID of the person assisting you.</p>
+
+        @if (Model.MockMode)
+        {
+            <div class="info-panel">Demo Employee ID: <strong>@Model.MockEmployeeId</strong></div>
+        }
+
+        <form method="post" action="/car-loan/employee-assistance/verify">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="field">
+                <label for="EmployeeId">Bank Employee ID</label>
+                <input class="input" id="EmployeeId" name="EmployeeId" value="@Model.Employee.EmployeeId"
+                       autocomplete="off" placeholder="EMP001" style="text-transform:uppercase;" />
+            </div>
+            <div class="btn-row">
+                <button type="submit" class="btn btn-cta">Verify Employee ID</button>
+            </div>
+        </form>
+
+        <form method="post" action="/car-loan/employee-assistance" style="text-align:center;">
+            @Html.AntiForgeryToken()
+            <button type="submit" name="assisted" value="No" class="btn btn-ghost">I am not assisted by a bank employee</button>
+        </form>
+    }
+</div>

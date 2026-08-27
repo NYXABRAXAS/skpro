@@ -1,0 +1,70 @@
+@model StepViewModel
+@{
+    ViewData["Title"] = "Review Your Details";
+    ViewData["StepModel"] = Model;
+    ViewData["EnableTimeout"] = true;
+    var a = Model.App;
+    string INR(decimal d) => "₹ " + d.ToString("#,##0", System.Globalization.CultureInfo.GetCultureInfo("en-IN"));
+}
+
+<div class="card-surface">
+    <h1 class="page-title">Review Your Details</h1>
+    <p class="page-subtitle">Please confirm everything is correct before we check your eligibility.</p>
+
+    <div class="review-group">
+        <h3>Customer <a href="/car-loan/aadhaar">Edit</a></h3>
+        <dl>
+            <div class="row2"><dt>Name</dt><dd>@a.CustomerName</dd></div>
+            <div class="row2"><dt>Date of Birth</dt><dd>@a.DateOfBirth</dd></div>
+            <div class="row2"><dt>Address</dt><dd>@a.Address</dd></div>
+            <div class="row2"><dt>Mobile</dt><dd>XXXXXX@(a.MobileNumber.Length >= 4 ? a.MobileNumber.Substring(a.MobileNumber.Length - 4) : "")</dd></div>
+            <div class="row2"><dt>PAN</dt><dd>@a.PanMasked</dd></div>
+        </dl>
+    </div>
+
+    <div class="review-group">
+        <h3>Vehicle <a href="/car-loan/vehicle">Edit</a></h3>
+        <dl>
+            <div class="row2"><dt>Vehicle Type</dt><dd>@(a.VehicleType == VehicleTypes.Used ? "Used Car" : "New Car")</dd></div>
+            <div class="row2"><dt>Manufacturer</dt><dd>@a.Manufacturer</dd></div>
+            <div class="row2"><dt>Model</dt><dd>@a.Model</dd></div>
+            <div class="row2"><dt>Variant</dt><dd>@a.Variant</dd></div>
+            @if (a.VehicleType == VehicleTypes.Used && a.RegistrationYear is not null)
+            {
+                <div class="row2"><dt>Registration Year</dt><dd>@a.RegistrationYear</dd></div>
+            }
+            <div class="row2"><dt>Vehicle Cost</dt><dd>@INR(a.VehicleCost)</dd></div>
+        </dl>
+    </div>
+
+    <div class="review-group">
+        <h3>Loan <a href="/car-loan/vehicle">Edit</a></h3>
+        <dl>
+            <div class="row2"><dt>Required Loan Amount</dt><dd>@INR(a.RequiredLoanAmount)</dd></div>
+        </dl>
+    </div>
+
+    <form method="post" action="/car-loan/review">
+        @Html.AntiForgeryToken()
+
+        @if (Model.MockMode)
+        {
+            <div class="field" style="margin-top:10px;">
+                <label for="mockScenario">Demo: BRE / processing scenario</label>
+                <select class="input" id="mockScenario" name="mockScenario">
+                    @foreach (var s in Model.MockScenarios)
+                    {
+                        <option value="@s" selected="@(a.MockScenario == s)">@s</option>
+                    }
+                </select>
+                <span class="hint">Only shown in mock mode. Controls the simulated Bureau / BRE / LOS outcome.</span>
+            </div>
+        }
+
+        <div class="btn-row">
+            <button type="submit" class="btn btn-cta">Check My Eligibility</button>
+        </div>
+    </form>
+
+    <a class="back-link" href="/car-loan/vehicle">&larr; Back</a>
+</div>

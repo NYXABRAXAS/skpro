@@ -1,0 +1,102 @@
+@model StepViewModel
+@{
+    ViewData["Title"] = "Car Loan Details";
+    ViewData["StepModel"] = Model;
+    ViewData["EnableTimeout"] = true;
+    var v = Model.Vehicle;
+    var years = Enumerable.Range(DateTime.Now.Year - 15, 16).Reverse().ToArray();
+}
+
+<div class="card-surface">
+    <h1 class="page-title">Car Loan Details</h1>
+    <p class="page-subtitle">Tell us about the car and the loan you need.</p>
+
+    <form method="post" action="/car-loan/vehicle">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="All" class="text-danger"></div>
+
+        <div class="field">
+            <label>Vehicle Type</label>
+            <div class="choice-grid" data-choice-group>
+                <label class="choice-card" tabindex="0">
+                    <input type="radio" name="VehicleType" value="New" checked="@(v.VehicleType != VehicleTypes.Used)" />
+                    <span class="ic" aria-hidden="true">🚗</span><span class="t">New Car</span>
+                </label>
+                <label class="choice-card" tabindex="0">
+                    <input type="radio" name="VehicleType" value="Used" checked="@(v.VehicleType == VehicleTypes.Used)" />
+                    <span class="ic" aria-hidden="true">🚙</span><span class="t">Used Car</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="Manufacturer">Manufacturer</label>
+            <select class="input" id="Manufacturer" name="Manufacturer">
+                <option value="">Select manufacturer</option>
+                @foreach (var m in VehicleReferenceData.Manufacturers)
+                {
+                    <option value="@m" selected="@(v.Manufacturer == m)">@m</option>
+                }
+            </select>
+        </div>
+
+        <div class="field">
+            <label for="Model">Model</label>
+            <input class="input" id="Model" name="Model" value="@v.Model" placeholder="e.g. Creta" />
+        </div>
+
+        <div class="field">
+            <label for="Variant">Variant</label>
+            <input class="input" id="Variant" name="Variant" value="@v.Variant" placeholder="e.g. SX" />
+        </div>
+
+        <div class="field" id="usedYearField" style="display:none;">
+            <label for="RegistrationYear">Vehicle Registration Year</label>
+            <select class="input" id="RegistrationYear" name="RegistrationYear">
+                <option value="">Select year</option>
+                @foreach (var y in years)
+                {
+                    <option value="@y" selected="@(v.RegistrationYear == y)">@y</option>
+                }
+            </select>
+        </div>
+
+        <div class="field">
+            <label for="VehicleCost">Vehicle Cost</label>
+            <input class="input" id="VehicleCost" name="VehicleCost" inputmode="numeric" data-numeric="9"
+                   data-currency-preview="#vehicleCostPreview"
+                   value="@(v.VehicleCost > 0 ? v.VehicleCost.ToString("0") : "")" placeholder="850000" />
+            <span class="hint" id="vehicleCostPreview"></span>
+        </div>
+
+        <div class="field">
+            <label for="RequiredLoanAmount">Required Loan Amount</label>
+            <input class="input" id="RequiredLoanAmount" name="RequiredLoanAmount" inputmode="numeric" data-numeric="9"
+                   data-currency-preview="#loanAmountPreview"
+                   value="@(v.RequiredLoanAmount > 0 ? v.RequiredLoanAmount.ToString("0") : "")" placeholder="700000" />
+            <span class="hint" id="loanAmountPreview"></span>
+            <span class="text-danger" id="loanAmountInlineMsg"></span>
+        </div>
+
+        <div class="btn-row">
+            <button type="submit" class="btn btn-cta">Continue to Review</button>
+        </div>
+    </form>
+
+    <a class="back-link" href="/car-loan/pan">&larr; Back</a>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            var group = document.querySelector("[data-choice-group]");
+            var field = document.getElementById("usedYearField");
+            function sync() {
+                var used = document.querySelector("input[name=VehicleType]:checked");
+                field.style.display = (used && used.value === "Used") ? "block" : "none";
+            }
+            if (group) group.addEventListener("choice:change", sync);
+            sync();
+        })();
+    </script>
+}
