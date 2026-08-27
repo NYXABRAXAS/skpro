@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>UI Components &middot; Suryoday Self Kiosk</title>
+  <link rel="stylesheet" href="css/suryoday-theme.css" />
+  <link rel="stylesheet" href="css/site.css" />
+  <style>
+    .sg-section { margin-bottom: 34px; }
+    .sg-section > h2 {
+      font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;
+      color: var(--muted); border-bottom: 2px solid var(--border);
+      padding-bottom: 6px; margin: 0 0 16px;
+    }
+    .sg-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+    .sg-swatch { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; font-size: .78rem; }
+    .sg-swatch .chip { height: 60px; }
+    .sg-swatch .meta { padding: 8px 10px; background: #fff; }
+    .sg-swatch .meta b { display: block; }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <header class="app-header">
+    <div class="inner">
+      <a class="brand" href="index.html" aria-label="Suryoday Small Finance Bank home">
+        <img src="images/suryoday-logo.svg" alt="Suryoday Small Finance Bank &ndash; A Bank of Smiles" />
+      </a>
+      <span class="product-tag">UI Components</span>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <h1 class="page-title">UI Components &amp; Style Guide</h1>
+    <p class="page-subtitle">Every reusable building block used across the Self Kiosk car-loan journey.</p>
+
+    <div class="sg-section">
+      <h2>Brand colours (CSS variables)</h2>
+      <div class="sg-swatches">
+        <div class="sg-swatch"><div class="chip" style="background:var(--primary-blue)"></div><div class="meta"><b>--primary-blue</b>#2E3192</div></div>
+        <div class="sg-swatch"><div class="chip" style="background:var(--primary-orange)"></div><div class="meta"><b>--primary-orange</b>#F58220</div></div>
+        <div class="sg-swatch"><div class="chip" style="background:var(--brand-plum)"></div><div class="meta"><b>--brand-plum</b>#3a1d5c</div></div>
+        <div class="sg-swatch"><div class="chip" style="background:var(--light-bg)"></div><div class="meta"><b>--light-bg</b>#E7E6F2</div></div>
+        <div class="sg-swatch"><div class="chip" style="background:var(--cream)"></div><div class="meta"><b>--cream</b>#F8EBD1</div></div>
+        <div class="sg-swatch"><div class="chip" style="background:var(--dark)"></div><div class="meta"><b>--dark</b>#222222</div></div>
+      </div>
+    </div>
+
+    <div class="sg-section">
+      <h2>Buttons</h2>
+      <div class="btn-row">
+        <button class="btn btn-cta">Primary CTA (orange)</button>
+        <button class="btn btn-primary">Primary (blue)</button>
+        <button class="btn btn-outline">Outline</button>
+        <button class="btn btn-ghost">Ghost</button>
+        <button class="btn btn-cta" disabled>Disabled</button>
+      </div>
+    </div>
+
+    <div class="sg-section">
+      <h2>Progress stepper</h2>
+      <nav class="stepper" aria-label="Application progress">
+        <div class="mobile-line">Step 3 of 7 <small>Mobile</small></div>
+        <div class="bar" role="progressbar" aria-valuenow="43" aria-valuemin="0" aria-valuemax="100"><span style="width:43%"></span></div>
+        <ol class="track">
+          <li class="node done">Consent</li>
+          <li class="node done">Aadhaar</li>
+          <li class="node active">Mobile</li>
+          <li class="node">PAN</li>
+          <li class="node">Vehicle</li>
+          <li class="node">Eligibility</li>
+          <li class="node">Decision</li>
+        </ol>
+      </nav>
+    </div>
+
+    <div class="sg-section">
+      <h2>Form fields</h2>
+      <div class="card-surface">
+        <div class="field">
+          <label for="c-text">Text input</label>
+          <input class="input" id="c-text" placeholder="Placeholder text" />
+          <span class="hint">Helper text sits under the field.</span>
+        </div>
+        <div class="field">
+          <label for="c-sel">Select</label>
+          <select class="input" id="c-sel"><option>Option one</option><option>Option two</option></select>
+        </div>
+        <div class="field">
+          <label for="c-err">Invalid input</label>
+          <input class="input is-invalid" id="c-err" value="Bad value" />
+          <span class="text-danger">Please enter a valid value.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sg-section">
+      <h2>Choice cards (radio)</h2>
+      <div class="choice-grid" data-choice-group>
+        <label class="choice-card" tabindex="0">
+          <input type="radio" name="c-choice" checked />
+          <span class="ic" aria-hidden="true">&#128663;</span><span class="t">New Car</span><span class="d">Brand new</span>
+        </label>
+        <label class="choice-card" tabindex="0">
+          <input type="radio" name="c-choice" />
+          <span class="ic" aria-hidden="true">&#128665;</span><span class="t">Used Car</span><span class="d">Pre-owned</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="sg-section">
+      <h2>Consent checkbox</h2>
+      <label class="consent-item">
+        <input type="checkbox" />
+        <span class="txt"><strong>Aadhaar eKYC</strong><br />I provide my consent for Aadhaar based authentication / eKYC.</span>
+      </label>
+    </div>
+
+    <div class="sg-section">
+      <h2>OTP input</h2>
+      <div class="otp-inputs">
+        <input inputmode="numeric" maxlength="1" value="1" /><input inputmode="numeric" maxlength="1" value="2" />
+        <input inputmode="numeric" maxlength="1" value="3" /><input inputmode="numeric" maxlength="1" />
+        <input inputmode="numeric" maxlength="1" /><input inputmode="numeric" maxlength="1" />
+      </div>
+      <p class="resend-line"><span>Resend OTP in 30 seconds</span></p>
+    </div>
+
+    <div class="sg-section">
+      <h2>Alerts</h2>
+      <div class="alert alert-success"><span aria-hidden="true">&#10003;</span><span>Verification successful.</span></div>
+      <div class="alert alert-danger"><span aria-hidden="true">&#33;</span><span>Invalid OTP. Please try again.</span></div>
+      <div class="alert alert-warning"><span aria-hidden="true">&#9888;</span><span>Your session is about to expire.</span></div>
+      <div class="info-panel">Cream information panel &mdash; used for demo hints and business messages.</div>
+    </div>
+
+    <div class="sg-section">
+      <h2>Cards</h2>
+      <div class="readonly-block"><span class="l">Customer Name</span><div class="v">Rajesh Kumar</div></div>
+      <div class="amount-cards">
+        <div class="amount-card"><div class="l">Requested</div><div class="v">&#8377; 9,00,000</div></div>
+        <div class="amount-card hi"><div class="l">Eligible</div><div class="v">&#8377; 8,50,000</div></div>
+      </div>
+    </div>
+
+    <div class="sg-section">
+      <h2>Result icons</h2>
+      <div style="display:flex; gap:16px;">
+        <div class="result-icon ok" aria-hidden="true">&#10003;</div>
+        <div class="result-icon refer" aria-hidden="true">&#8987;</div>
+        <div class="result-icon no" aria-hidden="true">&#10005;</div>
+      </div>
+    </div>
+
+    <div class="sg-section">
+      <h2>Loading spinner</h2>
+      <div class="spinner" aria-hidden="true"></div>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <div class="pills">SECURE &nbsp;&middot;&nbsp; FAST &nbsp;&middot;&nbsp; SIMPLE</div>
+    <div>Suryoday Small Finance Bank &middot; A Bank of Smiles</div>
+  </footer>
+</div>
+<script src="js/site.js"></script>
+<script src="js/otp.js"></script>
+</body>
+</html>

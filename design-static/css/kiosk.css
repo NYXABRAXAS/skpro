@@ -1,0 +1,133 @@
+/* Full-screen kiosk home screen – large touchscreen optimised */
+.kiosk-body {
+    min-height: 100vh;
+    background:
+        var(--geo-pattern),
+        radial-gradient(120% 90% at 15% 0%, #4a2570 0%, var(--brand-plum) 45%, var(--brand-plum-dark) 100%);
+    background-attachment: fixed;
+    display: flex;
+    flex-direction: column;
+    color: var(--white);
+}
+
+.kiosk-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 40px;
+    background: var(--white);
+    border-bottom: 4px solid var(--primary-orange);
+}
+.kiosk-topbar .kiosk-logo { height: 52px; width: auto; display: block; }
+.kiosk-topbar .product-tag { background: var(--primary-blue); color: #fff; font-size: 1.05rem; }
+
+.kiosk-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 24px;
+}
+
+.kiosk-hero h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    margin: 0 0 12px;
+    letter-spacing: .2px;
+    text-shadow: 0 2px 18px rgba(0,0,0,.25);
+}
+.kiosk-hero p {
+    font-size: clamp(1rem, 2.4vw, 1.4rem);
+    color: rgba(255, 255, 255, .85);
+    margin: 0 0 36px;
+}
+
+.kiosk-options {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+.kiosk-option {
+    background: var(--white);
+    color: var(--primary-blue);
+    border: 0;
+    border-radius: 22px;
+    padding: 30px 44px;
+    min-width: 260px;
+    font-size: 1.5rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: var(--shadow-lg);
+    transition: transform .1s ease, box-shadow .15s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+.kiosk-option .ic { font-size: 2.6rem; }
+.kiosk-option:hover { transform: translateY(-4px); }
+.kiosk-option:focus-visible { outline: 4px solid var(--primary-orange); outline-offset: 3px; }
+
+.kiosk-qr-card {
+    background: var(--white);
+    color: var(--dark);
+    border-radius: 24px;
+    padding: 28px 34px;
+    box-shadow: var(--shadow-lg);
+    max-width: 420px;
+    animation: qr-in .5s ease both;
+}
+@keyframes qr-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+.kiosk-qr-card .scan-label {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--primary-blue);
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+}
+.kiosk-qr-card img {
+    width: 260px;
+    height: 260px;
+    display: block;
+    margin: 0 auto;
+    border: 10px solid var(--white);
+    border-radius: 12px;
+}
+.kiosk-qr-card .scan-help { color: var(--muted); margin: 14px 0 6px; }
+.kiosk-qr-card .journey-url { font-size: .74rem; color: var(--muted); word-break: break-all; }
+
+.kiosk-start-btn {
+    margin-top: 26px;
+    background: var(--primary-orange);
+    color: #fff;
+    border: 0;
+    border-radius: 999px;
+    padding: 16px 44px;
+    font-size: 1.15rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+}
+.kiosk-start-btn:hover { background: var(--primary-orange-dark); }
+
+.kiosk-footer {
+    background: var(--brand-plum-dark);
+    text-align: center;
+    padding: 16px;
+    color: rgba(255, 255, 255, .8);
+    letter-spacing: 3px;
+    font-weight: 700;
+    font-size: .85rem;
+}
+
+@media (max-width: 700px) {
+    .kiosk-topbar { padding: 16px 20px; }
+    .kiosk-option { min-width: 200px; padding: 22px 28px; font-size: 1.2rem; }
+    .kiosk-qr-card img { width: 200px; height: 200px; }
+}

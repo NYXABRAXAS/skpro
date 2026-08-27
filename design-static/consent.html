@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Consent &amp; Verification &middot; Suryoday Small Finance Bank</title>
+  <link rel="stylesheet" href="css/suryoday-theme.css" />
+  <link rel="stylesheet" href="css/site.css" />
+</head>
+<body>
+<div class="app-shell">
+  <div class="mock-banner" role="note">DEMO / MOCK MODE &mdash; all verifications use sample data. No real APIs are called.</div>
+  <header class="app-header">
+    <div class="inner">
+      <a class="brand" href="index.html" aria-label="Suryoday Small Finance Bank home">
+        <img src="images/suryoday-logo.svg" alt="Suryoday Small Finance Bank &ndash; A Bank of Smiles" />
+      </a>
+      <span class="product-tag">Car Loan Eligibility</span>
+    </div>
+  </header>
+
+  <main class="app-main">
+<nav class="stepper" aria-label="Application progress">
+  <div class="mobile-line">Step 1 of 7 <small>Consent</small></div>
+  <div class="bar" role="progressbar" aria-valuenow="14" aria-valuemin="0" aria-valuemax="100"><span style="width:14%"></span></div>
+  <ol class="track">
+    <li class="node active">Consent</li>
+    <li class="node">Aadhaar</li>
+    <li class="node">Mobile</li>
+    <li class="node">PAN</li>
+    <li class="node">Vehicle</li>
+    <li class="node">Eligibility</li>
+    <li class="node">Decision</li>
+  </ol>
+</nav>
+    <div class="card-surface">
+      <h1 class="page-title">Consent &amp; Verification</h1>
+      <p class="page-subtitle">Please review and accept the following to check your car loan eligibility.</p>
+
+      <div class="info-panel">
+        By continuing you agree to our <a href="#" onclick="return false;">Terms &amp; Conditions</a> and
+        <a href="#" onclick="return false;">Privacy Policy</a>. Your information is used only to evaluate your car loan eligibility.
+      </div>
+
+      <form data-consent-form onsubmit="return false;">
+        <label class="consent-item">
+          <input type="checkbox" data-mandatory />
+          <span class="txt"><strong>Aadhaar eKYC</strong><br />
+            I provide my consent for Aadhaar based authentication / eKYC for the purpose of processing my car loan application.</span>
+        </label>
+        <label class="consent-item">
+          <input type="checkbox" data-mandatory />
+          <span class="txt"><strong>Credit Bureau Check</strong><br />
+            I provide my consent to obtain my credit information for evaluating my car loan eligibility.</span>
+        </label>
+        <div class="btn-row">
+          <button type="button" class="btn btn-cta" data-consent-submit onclick="location.href='aadhaar.html'" disabled>Continue</button>
+        </div>
+      </form>
+    </div>
+  </main>
+  <footer class="app-footer">
+    <div class="pills">SECURE &nbsp;&middot;&nbsp; FAST &nbsp;&middot;&nbsp; SIMPLE</div>
+    <div>Suryoday Small Finance Bank &middot; A Bank of Smiles</div>
+  </footer>
+</div>
+<script src="js/site.js"></script>
+<script src="js/otp.js"></script>
+</body>
+</html>
