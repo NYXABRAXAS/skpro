@@ -6,11 +6,16 @@
    ========================================================================== */
 :root {
   --kiosk-bg-image:    url('../images/car-loan-bg.jpg');
-  --kiosk-bg-position:  left center;
+  --kiosk-bg-position:  center center;
   --kiosk-bg-size:      cover;
-  /* Scrim: keeps the photo readable and lets the white card pop.
-     Left→right dark-to-clear on desktop; a flat wash is used on small screens. */
-  --kiosk-scrim: linear-gradient(90deg, rgba(18,26,44,.55) 0%, rgba(18,26,44,.25) 38%, rgba(18,26,44,0) 66%);
+  /* Scrim: transparent over the photo (left), softly blending into a light
+     lavender panel on the right where the content card sits.
+     A flat wash is used on small screens (see media query). */
+  --kiosk-scrim: linear-gradient(90deg,
+      rgba(231,230,242,0)   0%,
+      rgba(231,230,242,0)   42%,
+      rgba(231,230,242,.55) 66%,
+      rgba(231,230,242,.92) 100%);
 }
 
 .kiosk-body {
@@ -18,13 +23,11 @@
   display: flex;
   flex-direction: column;
   color: var(--dark);
-  background:
-    var(--kiosk-scrim),
-    var(--kiosk-bg-image);
+  background-color: var(--light-bg);
+  background-image: var(--kiosk-scrim), var(--kiosk-bg-image);
   background-position: center, var(--kiosk-bg-position);
   background-size: cover, var(--kiosk-bg-size);
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  background-repeat: no-repeat, no-repeat;
 }
 
 /* Top bar */
@@ -181,11 +184,10 @@
   font-size: .82rem;
 }
 
-/* Tablet / small desktop – centre the card, wash the whole photo */
+/* Tablet / small desktop – centre the card, wash the whole photo for contrast */
 @media (max-width: 991.98px) {
   .kiosk-body {
-    --kiosk-scrim: linear-gradient(180deg, rgba(18,26,44,.5), rgba(18,26,44,.5));
-    background-attachment: scroll;
+    --kiosk-scrim: linear-gradient(180deg, rgba(18,26,44,.45), rgba(18,26,44,.55));
   }
   .kiosk-main { justify-content: center; padding: 28px 18px; }
 }
