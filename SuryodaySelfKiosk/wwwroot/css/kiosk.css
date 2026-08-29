@@ -1,133 +1,200 @@
-/* Full-screen kiosk home screen – large touchscreen optimised */
+/* ============================================================================
+   Suryoday Car Loan – Self Kiosk home / poster screen
+   Shown on the kiosk touchscreen and on any device that opens "/".
+
+   CONFIGURE the poster background from here:
+   ========================================================================== */
+:root {
+  --kiosk-bg-image:    url('../images/car-loan-bg.jpg');
+  --kiosk-bg-position:  left center;
+  --kiosk-bg-size:      cover;
+  /* Scrim: keeps the photo readable and lets the white card pop.
+     Left→right dark-to-clear on desktop; a flat wash is used on small screens. */
+  --kiosk-scrim: linear-gradient(90deg, rgba(18,26,44,.55) 0%, rgba(18,26,44,.25) 38%, rgba(18,26,44,0) 66%);
+}
+
 .kiosk-body {
-    min-height: 100vh;
-    background:
-        var(--geo-pattern),
-        radial-gradient(120% 90% at 15% 0%, #4a2570 0%, var(--brand-plum) 45%, var(--brand-plum-dark) 100%);
-    background-attachment: fixed;
-    display: flex;
-    flex-direction: column;
-    color: var(--white);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  color: var(--dark);
+  background:
+    var(--kiosk-scrim),
+    var(--kiosk-bg-image);
+  background-position: center, var(--kiosk-bg-position);
+  background-size: cover, var(--kiosk-bg-size);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
+/* Top bar */
 .kiosk-topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 18px 40px;
-    background: var(--white);
-    border-bottom: 4px solid var(--primary-orange);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px clamp(18px, 4vw, 46px);
+  background: #fff;
+  border-bottom: 4px solid var(--primary-orange);
 }
-.kiosk-topbar .kiosk-logo { height: 52px; width: auto; display: block; }
-.kiosk-topbar .product-tag { background: var(--primary-blue); color: #fff; font-size: 1.05rem; }
+.kiosk-topbar .kiosk-logo { height: 48px; width: auto; display: block; }
+.kiosk-topbar .product-tag {
+  background: var(--primary-blue);
+  color: #fff;
+  border-radius: 999px;
+  padding: 7px 18px;
+  font-weight: 700;
+  font-size: 1rem;
+  white-space: nowrap;
+}
 
+/* Main area – card sits to the right so the family photo stays visible */
 .kiosk-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 40px 24px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 22px clamp(20px, 7vw, 100px);
 }
 
-.kiosk-hero h1 {
-    font-size: clamp(2rem, 5vw, 3.2rem);
-    font-weight: 800;
-    margin: 0 0 12px;
-    letter-spacing: .2px;
-    text-shadow: 0 2px 18px rgba(0,0,0,.25);
-}
-.kiosk-hero p {
-    font-size: clamp(1rem, 2.4vw, 1.4rem);
-    color: rgba(255, 255, 255, .85);
-    margin: 0 0 36px;
+.kiosk-card {
+  width: 100%;
+  max-width: 540px;
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+  background: rgba(255, 255, 255, .97);
+  border-radius: 24px;
+  box-shadow: 0 30px 70px rgba(15, 27, 63, .30);
+  padding: 28px clamp(20px, 3vw, 40px);
+  text-align: center;
 }
 
+.kiosk-card h1 {
+  margin: 0 0 6px;
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
+  font-weight: 800;
+  color: var(--primary-blue);
+  line-height: 1.15;
+}
+.kiosk-card .kiosk-sub {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: .98rem;
+}
+
+/* New / Used choice buttons */
 .kiosk-options {
-    display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 40px;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
 }
-
+.kiosk-options form { flex: 1 1 200px; }
 .kiosk-option {
-    background: var(--white);
-    color: var(--primary-blue);
-    border: 0;
-    border-radius: 22px;
-    padding: 30px 44px;
-    min-width: 260px;
-    font-size: 1.5rem;
-    font-weight: 800;
-    cursor: pointer;
-    box-shadow: var(--shadow-lg);
-    transition: transform .1s ease, box-shadow .15s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 15px 16px;
+  border: 2px solid var(--primary-blue);
+  border-radius: 16px;
+  background: #fff;
+  color: var(--primary-blue);
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: .3px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background .15s ease, transform .08s ease, box-shadow .15s ease;
 }
-.kiosk-option .ic { font-size: 2.6rem; }
-.kiosk-option:hover { transform: translateY(-4px); }
-.kiosk-option:focus-visible { outline: 4px solid var(--primary-orange); outline-offset: 3px; }
+.kiosk-option .ic { font-size: 1.9rem; }
+.kiosk-option:hover { background: var(--light-bg); box-shadow: var(--shadow-sm); }
+.kiosk-option:active { transform: translateY(1px); }
+.kiosk-option:focus-visible { outline: 3px solid var(--primary-orange); outline-offset: 2px; }
 
-.kiosk-qr-card {
-    background: var(--white);
-    color: var(--dark);
-    border-radius: 24px;
-    padding: 28px 34px;
-    box-shadow: var(--shadow-lg);
-    max-width: 420px;
-    animation: qr-in .5s ease both;
+/* Divider */
+.kiosk-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0 12px;
+  color: var(--muted);
+  font-size: .74rem;
+  font-weight: 700;
+  letter-spacing: 1.4px;
 }
-@keyframes qr-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.kiosk-divider::before, .kiosk-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
 
-.kiosk-qr-card .scan-label {
-    font-size: 1.3rem;
-    font-weight: 800;
-    color: var(--primary-blue);
-    letter-spacing: 1px;
-    margin-bottom: 14px;
+/* QR block */
+.kiosk-qr .scan-label {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--primary-blue);
+  letter-spacing: 1px;
+  margin-bottom: 12px;
 }
-.kiosk-qr-card img {
-    width: 260px;
-    height: 260px;
-    display: block;
-    margin: 0 auto;
-    border: 10px solid var(--white);
-    border-radius: 12px;
+.kiosk-qr img {
+  width: 174px;
+  height: 174px;
+  display: block;
+  margin: 0 auto;
+  padding: 9px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
 }
-.kiosk-qr-card .scan-help { color: var(--muted); margin: 14px 0 6px; }
-.kiosk-qr-card .journey-url { font-size: .74rem; color: var(--muted); word-break: break-all; }
+.kiosk-qr .scan-help { color: var(--muted); margin: 10px 0 3px; font-size: .88rem; }
+.kiosk-qr .journey-url { font-size: .7rem; color: var(--muted); word-break: break-all; margin: 0; }
 
 .kiosk-start-btn {
-    margin-top: 26px;
-    background: var(--primary-orange);
-    color: #fff;
-    border: 0;
-    border-radius: 999px;
-    padding: 16px 44px;
-    font-size: 1.15rem;
-    font-weight: 800;
-    cursor: pointer;
-    box-shadow: var(--shadow-md);
+  display: inline-block;
+  margin-top: 16px;
+  background: var(--primary-orange);
+  color: #fff;
+  border: 0;
+  border-radius: 999px;
+  padding: 14px 40px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: var(--shadow-md);
+  transition: background .15s ease;
 }
 .kiosk-start-btn:hover { background: var(--primary-orange-dark); }
 
+/* Footer */
 .kiosk-footer {
-    background: var(--brand-plum-dark);
-    text-align: center;
-    padding: 16px;
-    color: rgba(255, 255, 255, .8);
-    letter-spacing: 3px;
-    font-weight: 700;
-    font-size: .85rem;
+  background: var(--brand-plum-dark);
+  text-align: center;
+  padding: 14px;
+  color: rgba(255, 255, 255, .85);
+  letter-spacing: 2.5px;
+  font-weight: 700;
+  font-size: .82rem;
 }
 
-@media (max-width: 700px) {
-    .kiosk-topbar { padding: 16px 20px; }
-    .kiosk-option { min-width: 200px; padding: 22px 28px; font-size: 1.2rem; }
-    .kiosk-qr-card img { width: 200px; height: 200px; }
+/* Tablet / small desktop – centre the card, wash the whole photo */
+@media (max-width: 991.98px) {
+  .kiosk-body {
+    --kiosk-scrim: linear-gradient(180deg, rgba(18,26,44,.5), rgba(18,26,44,.5));
+    background-attachment: scroll;
+  }
+  .kiosk-main { justify-content: center; padding: 28px 18px; }
+}
+
+@media (max-width: 560px) {
+  .kiosk-topbar { padding: 12px 16px; }
+  .kiosk-topbar .kiosk-logo { height: 38px; }
+  .kiosk-topbar .product-tag { font-size: .82rem; padding: 5px 12px; }
+  .kiosk-card { padding: 26px 18px; border-radius: 18px; }
+  .kiosk-options { flex-direction: column; }
+  .kiosk-qr img { width: 168px; height: 168px; }
 }

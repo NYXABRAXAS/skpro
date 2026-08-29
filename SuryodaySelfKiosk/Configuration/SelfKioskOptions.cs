@@ -9,7 +9,7 @@ public class SelfKioskOptions
     public const string SectionName = "SelfKiosk";
 
     public string BaseUrl { get; set; } = "https://localhost:5001";
-    public string LoanJourneyPath { get; set; } = "/car-loan/start";
+    public string LoanJourneyPath { get; set; } = "/car-loan/consent";
 
     /// <summary>When true the app runs entirely on mock services and shows developer helpers.</summary>
     public bool MockMode { get; set; } = true;

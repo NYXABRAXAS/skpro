@@ -19,15 +19,23 @@ Then open:
 | Screen            | URL                                   |
 |-------------------|---------------------------------------|
 | Kiosk home        | `https://localhost:7042/`             |
-| Mobile journey    | `https://localhost:7042/car-loan/start` |
+| Customer journey  | `https://localhost:7042/car-loan/consent`  (the QR target) |
 
 `.NET 10 SDK` required. Ports come from `Properties/launchSettings.json`.
 
 ## Journey
 
-`Kiosk → QR → Start → Consent → Aadhaar eKYC → Mobile OTP → PAN → Vehicle & Loan →
-Review → Bureau → BRE Eligibility → Result → Customer Decision → Bank Employee Assistance →
-LOS Lead Creation → Success`
+The kiosk home (`/`) is the dealer/showroom **poster** — it uses the car-loan photo as a
+full-screen background (configurable in `wwwroot/css/kiosk.css` `:root`). The customer
+scans the QR (or taps New / Used on the touchscreen) and lands **straight on the consent
+screen**:
+
+`Kiosk poster → QR → Consent → (accept all) → Aadhaar eKYC → Mobile OTP → PAN →
+Vehicle & Loan → Review → Bureau → BRE Eligibility → Result → Customer Decision →
+Bank Employee Assistance → LOS Lead Creation → Success`
+
+`/car-loan/start` (New/Used landing) still exists — the kiosk touch buttons use it to
+pre-select the vehicle type before Consent; QR customers pick it on the Vehicle step.
 
 ### Mock credentials / data (shown only when `SelfKiosk:MockMode = true`)
 
