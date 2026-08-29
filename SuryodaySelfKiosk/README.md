@@ -40,6 +40,25 @@ LOS Lead Creation → Success`
 | PAN              | any valid format, e.g. `ABCDE1234F` |
 | Bank Employee ID | `EMP001`         |
 
+### Consent screen
+
+`/car-loan/consent` is the "Welcome to Suryoday Car Loan" full-screen consent modal
+(`Views/CarLoan/Consent.cshtml` + `_ConsentLayout.cshtml` + `wwwroot/css/consent.css`).
+Proceed is disabled until the three mandatory consents are accepted
+(Loan Processing, Credit Bureau, bottom Declaration); Communication Consent is optional.
+
+**Background image** – swap it from one place, the `:root` block at the top of
+`wwwroot/css/consent.css`:
+
+```css
+--desktop-bg-image: url('../images/car-loan-bg.jpg');
+--mobile-bg-image:  url('../images/car-loan-bg.jpg');
+```
+
+Drop replacement art into `wwwroot/images/` and point these two variables at it
+(`--*-bg-position` / `--*-bg-size` / `--bg-overlay` are configurable too). The mobile
+image auto-applies at ≤767px.
+
 Aadhaar step = enter Aadhaar number → OTP is sent to the Aadhaar-registered mobile → enter that
 OTP → eKYC (name / DOB / address) is returned. Only the last 4 digits of the Aadhaar are ever stored.
 

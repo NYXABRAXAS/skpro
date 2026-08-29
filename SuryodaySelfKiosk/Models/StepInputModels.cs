@@ -4,11 +4,17 @@ namespace SuryodaySelfKiosk.Models;
 
 public class ConsentInput
 {
-    [Range(typeof(bool), "true", "true", ErrorMessage = "Aadhaar eKYC consent is required to continue.")]
-    public bool AadhaarConsent { get; set; }
+    [Range(typeof(bool), "true", "true", ErrorMessage = "Please accept the Loan Processing Consent to continue.")]
+    public bool LoanProcessingConsent { get; set; }
 
-    [Range(typeof(bool), "true", "true", ErrorMessage = "Bureau / credit check consent is required to continue.")]
-    public bool BureauConsent { get; set; }
+    [Range(typeof(bool), "true", "true", ErrorMessage = "Please accept the Credit Bureau Consent to continue.")]
+    public bool CreditBureauConsent { get; set; }
+
+    /// <summary>Optional – not required to proceed.</summary>
+    public bool CommunicationConsent { get; set; }
+
+    [Range(typeof(bool), "true", "true", ErrorMessage = "Please confirm you have read and agree to the declaration.")]
+    public bool DeclarationAccepted { get; set; }
 }
 
 public class MobileInput

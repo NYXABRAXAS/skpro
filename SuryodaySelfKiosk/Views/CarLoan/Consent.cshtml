@@ -1,45 +1,205 @@
 @model StepViewModel
 @{
-    ViewData["Title"] = "Consent & Verification";
-    ViewData["StepModel"] = Model;
-    ViewData["EnableTimeout"] = true;
+    ViewData["Title"] = "Welcome to Suryoday Car Loan";
+    Layout = "_ConsentLayout";
+    var c = Model.Consent;
 }
 
-<div class="card-surface">
-    <h1 class="page-title">Consent &amp; Verification</h1>
-    <p class="page-subtitle">Please review and accept the following to check your car loan eligibility.</p>
-
-    <div class="info-panel">
-        By continuing you agree to our
-        <a href="#" onclick="return false;">Terms &amp; Conditions</a> and
-        <a href="#" onclick="return false;">Privacy Policy</a>.
-        Your information is used only to evaluate your car loan eligibility.
-    </div>
-
-    <form method="post" action="/car-loan/consent" data-consent-form>
+<div class="sy-viewport">
+    <form method="post" action="/car-loan/consent" class="sy-modal" role="dialog"
+          aria-modal="true" aria-labelledby="syModalTitle" id="syConsentForm">
         @Html.AntiForgeryToken()
-        <div asp-validation-summary="All" class="text-danger"></div>
 
-        <label class="consent-item">
-            <input type="checkbox" name="AadhaarConsent" value="true" data-mandatory
-                   checked="@Model.Consent.AadhaarConsent" />
-            <span class="txt">
-                <strong>Aadhaar eKYC</strong><br />
-                I provide my consent for Aadhaar based authentication / eKYC for the purpose of processing my car loan application.
-            </span>
-        </label>
+        <!-- Header -->
+        <header class="sy-modal__header">
+            <div class="sy-header-grid">
+                <div class="sy-header-logo">
+                    <img src="~/images/suryoday-logo.svg" alt="Suryoday Small Finance Bank" class="sy-logo" />
+                </div>
+                <div class="sy-header-title">
+                    <h1 id="syModalTitle" class="sy-title">Welcome to Suryoday Car Loan</h1>
+                    <p class="sy-subtitle">Scan. Enter. Check Eligibility.</p>
+                </div>
+                <div class="sy-header-close">
+                    <a href="/car-loan/start" class="sy-close" aria-label="Close and go back">
+                        <i class="bi bi-x-lg" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+        </header>
 
-        <label class="consent-item">
-            <input type="checkbox" name="BureauConsent" value="true" data-mandatory
-                   checked="@Model.Consent.BureauConsent" />
-            <span class="txt">
-                <strong>Credit Bureau Check</strong><br />
-                I provide my consent to obtain my credit information for evaluating my car loan eligibility.
-            </span>
-        </label>
+        <!-- Body -->
+        <div class="sy-modal__body">
 
-        <div class="btn-row">
-            <button type="submit" class="btn btn-cta" data-consent-submit disabled>Continue</button>
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="sy-error" role="alert">
+                    <div asp-validation-summary="All"></div>
+                </div>
+            }
+
+            <!-- Journey banner -->
+            <section class="sy-banner" aria-label="Journey information">
+                <div class="sy-banner__main">
+                    <div class="sy-banner__icon" aria-hidden="true">
+                        <i class="bi bi-car-front"></i>
+                        <span class="sy-banner__icon-badge"><i class="bi bi-currency-rupee"></i></span>
+                    </div>
+                    <div class="sy-banner__text">
+                        <h2 class="sy-banner__heading">Your journey starts here!</h2>
+                        <p>Enter your details to check your car loan eligibility.</p>
+                        <p>The information provided will be used for loan eligibility assessment and further processing.</p>
+                    </div>
+                </div>
+                <div class="sy-banner__divider" aria-hidden="true"></div>
+                <div class="sy-banner__note">
+                    <i class="bi bi-info-circle sy-banner__note-icon" aria-hidden="true"></i>
+                    <div>
+                        <p class="sy-banner__note-heading">Note:</p>
+                        <p>Loan eligibility is indicative and subject to verification, credit assessment and the Bank&rsquo;s applicable policies.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Three cards -->
+            <div class="row g-3 g-lg-4">
+
+                <!-- CARD 1 : CONSENT & DECLARATIONS -->
+                <div class="col-12 col-md-6 col-lg-4">
+                    <section class="sy-card h-100" aria-labelledby="syCard1">
+                        <div class="sy-card__head">
+                            <span class="sy-card__icon" aria-hidden="true"><i class="bi bi-pencil-square"></i></span>
+                            <h3 class="sy-card__title" id="syCard1">1. Consent &amp; Declarations</h3>
+                        </div>
+
+                        <div>
+                            <h4 class="sy-consent-label">Loan Processing Consent</h4>
+                            <p class="sy-legal">
+                                I/We consent to Suryoday Small Finance Bank collecting, processing and verifying the
+                                information provided by me/us for the purpose of assessing my/our eligibility for a car loan.
+                                I/We authorize the Bank to obtain and verify information from relevant sources, including
+                                credit information agencies, as applicable.
+                            </p>
+                            <p class="sy-legal">
+                                I/We understand that submission of this form does not guarantee a loan approval or sanction
+                                and is subject to the Bank&rsquo;s applicable policies, eligibility criteria and verification process.
+                            </p>
+                            <div class="form-check sy-check">
+                                <input class="form-check-input js-consent-required" type="checkbox"
+                                       asp-for="Consent.LoanProcessingConsent" id="consentLoanProcessing" />
+                                <label class="form-check-label" for="consentLoanProcessing">
+                                    I agree to the above Consent &amp; Declaration.
+                                </label>
+                            </div>
+                        </div>
+
+                        <hr class="sy-card__rule" />
+
+                        <div>
+                            <h4 class="sy-consent-label">Credit Bureau Consent</h4>
+                            <p class="sy-legal">
+                                I/We authorize the Bank to obtain my/our credit information from credit bureaus
+                                (such as CIBIL, Experian, Equifax or others) for the purpose of processing my/our
+                                car loan application.
+                            </p>
+                            <div class="form-check sy-check">
+                                <input class="form-check-input js-consent-required" type="checkbox"
+                                       asp-for="Consent.CreditBureauConsent" id="consentCreditBureau" />
+                                <label class="form-check-label" for="consentCreditBureau">
+                                    I agree to the above Credit Bureau Consent.
+                                </label>
+                            </div>
+                        </div>
+
+                        <hr class="sy-card__rule" />
+
+                        <div>
+                            <h4 class="sy-consent-label">Communication Consent <span class="sy-optional">(Optional)</span></h4>
+                            <p class="sy-legal">
+                                I consent to Suryoday Small Finance Bank and its authorised representatives contacting me
+                                through call, SMS, WhatsApp or email regarding my loan application, products and services.
+                            </p>
+                            <div class="form-check sy-check">
+                                <input class="form-check-input" type="checkbox"
+                                       asp-for="Consent.CommunicationConsent" id="consentCommunication" />
+                                <label class="form-check-label" for="consentCommunication">
+                                    I agree to receive communications.
+                                </label>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- CARD 2 : USER GUIDELINES -->
+                <div class="col-12 col-md-6 col-lg-4">
+                    <section class="sy-card h-100" aria-labelledby="syCard2">
+                        <div class="sy-card__head">
+                            <span class="sy-card__icon" aria-hidden="true"><i class="bi bi-shield-check"></i></span>
+                            <h3 class="sy-card__title" id="syCard2">2. User Guidelines / Instructions</h3>
+                        </div>
+                        <ul class="sy-guidelines">
+                            <li class="sy-guideline"><span class="sy-guideline__icon" aria-hidden="true"><i class="bi bi-person-vcard"></i></span><span class="sy-guideline__text">Keep your PAN and Aadhaar details ready.</span></li>
+                            <li class="sy-guideline"><span class="sy-guideline__icon" aria-hidden="true"><i class="bi bi-person"></i></span><span class="sy-guideline__text">Enter your details as per your official documents.</span></li>
+                            <li class="sy-guideline"><span class="sy-guideline__icon" aria-hidden="true"><i class="bi bi-phone"></i></span><span class="sy-guideline__text">Enter a valid mobile number registered with you.</span></li>
+                            <li class="sy-guideline"><span class="sy-guideline__icon" aria-hidden="true"><i class="bi bi-car-front"></i></span><span class="sy-guideline__text">Enter the correct vehicle/model and loan amount details.</span></li>
+                            <li class="sy-guideline"><span class="sy-guideline__icon" aria-hidden="true"><i class="bi bi-check2-circle"></i></span><span class="sy-guideline__text">Ensure the information provided is accurate and complete.</span></li>
+                            <li class="sy-guideline"><span class="sy-guideline__icon" aria-hidden="true"><i class="bi bi-lock"></i></span><span class="sy-guideline__text">Do not share your OTP with anyone.</span></li>
+                            <li class="sy-guideline"><span class="sy-guideline__icon" aria-hidden="true"><i class="bi bi-file-earmark-text"></i></span><span class="sy-guideline__text">Submission of details does not guarantee loan approval.</span></li>
+                            <li class="sy-guideline"><span class="sy-guideline__icon" aria-hidden="true"><i class="bi bi-bank"></i></span><span class="sy-guideline__text">Final sanction is subject to the Bank&rsquo;s credit policy and verification.</span></li>
+                        </ul>
+                    </section>
+                </div>
+
+                <!-- CARD 3 : WHY WE NEED YOUR INFORMATION -->
+                <div class="col-12 col-md-6 col-lg-4">
+                    <section class="sy-card sy-card--tinted h-100" aria-labelledby="syCard3">
+                        <div class="sy-card__head">
+                            <span class="sy-card__icon" aria-hidden="true"><i class="bi bi-shield-lock"></i></span>
+                            <h3 class="sy-card__title" id="syCard3">3. Why We Need Your Information?</h3>
+                        </div>
+                        <ul class="sy-reasons">
+                            <li><i class="bi bi-check-circle-fill" aria-hidden="true"></i><span>To assess your eligibility for a car loan</span></li>
+                            <li><i class="bi bi-check-circle-fill" aria-hidden="true"></i><span>To verify your identity and documents</span></li>
+                            <li><i class="bi bi-check-circle-fill" aria-hidden="true"></i><span>To obtain credit bureau report (with your consent)</span></li>
+                            <li><i class="bi bi-check-circle-fill" aria-hidden="true"></i><span>To communicate with you regarding your application</span></li>
+                        </ul>
+                        <div class="sy-secure">
+                            <span class="sy-secure__icon" aria-hidden="true"><i class="bi bi-shield-lock"></i></span>
+                            <div>
+                                <p class="sy-secure__heading">Your information is safe with us.</p>
+                                <p class="sy-secure__text">
+                                    We collect and process your data securely and strictly for the purposes mentioned
+                                    above in compliance with applicable laws and regulations.
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Bottom declaration -->
+            <section class="sy-declaration">
+                <div class="form-check sy-check sy-check--lg">
+                    <input class="form-check-input js-consent-required" type="checkbox"
+                           asp-for="Consent.DeclarationAccepted" id="declarationAgree" />
+                    <label class="form-check-label" for="declarationAgree">
+                        I have read, understood and agree to the above Consent(s), Declarations, Instructions and
+                        <a href="#" class="sy-link" onclick="return false;">Privacy Policy</a>.
+                    </label>
+                </div>
+            </section>
         </div>
+
+        <!-- Footer -->
+        <footer class="sy-modal__footer">
+            <p class="sy-footer-hint" id="syHint" role="status">
+                <i class="bi bi-exclamation-circle" aria-hidden="true"></i>
+                Please accept the mandatory consents to proceed.
+            </p>
+            <div class="sy-footer-actions">
+                <a href="/car-loan/start" class="sy-btn sy-btn--cancel">Cancel</a>
+                <button type="submit" class="sy-btn sy-btn--proceed" id="syProceed" disabled>Proceed</button>
+            </div>
+        </footer>
     </form>
 </div>

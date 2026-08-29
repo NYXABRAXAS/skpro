@@ -94,13 +94,19 @@ public class CarLoanController : Controller
     {
         var app = _state.GetOrCreate();
         var vm = Build(app, JourneySteps.Consent);
-        vm.Consent = new ConsentInput { AadhaarConsent = app.AadhaarConsent, BureauConsent = app.BureauConsent };
+        vm.Consent = new ConsentInput
+        {
+            LoanProcessingConsent = app.LoanProcessingConsent,
+            CreditBureauConsent = app.BureauConsent,
+            CommunicationConsent = app.CommunicationConsent,
+            DeclarationAccepted = app.DeclarationAccepted
+        };
         return View(vm);
     }
 
     [HttpPost("consent")]
     [ValidateAntiForgeryToken]
-    public IActionResult Consent(ConsentInput input)
+    public IActionResult Consent([Bind(Prefix = "Consent")] ConsentInput input)
     {
         var app = _state.GetOrCreate();
         if (!ModelState.IsValid)
@@ -110,8 +116,11 @@ public class CarLoanController : Controller
             return View(vm);
         }
 
-        app.AadhaarConsent = input.AadhaarConsent;
-        app.BureauConsent = input.BureauConsent;
+        app.LoanProcessingConsent = input.LoanProcessingConsent;
+        app.BureauConsent = input.CreditBureauConsent;
+        app.CommunicationConsent = input.CommunicationConsent;
+        app.DeclarationAccepted = input.DeclarationAccepted;
+        app.AadhaarConsent = input.LoanProcessingConsent; // Aadhaar eKYC authorised via Loan Processing Consent
         app.ConsentCapturedAtUtc = DateTimeOffset.UtcNow;
         app.JourneyStep = JourneySteps.Aadhaar;
         _state.Save(app);

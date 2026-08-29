@@ -12,9 +12,14 @@ public class CarLoanApplication
     public DateTimeOffset CreatedAtUtc { get; set; } = DateTimeOffset.UtcNow;
 
     // --- Consent ---
-    public bool AadhaarConsent { get; set; }
-    public bool BureauConsent { get; set; }
+    public bool LoanProcessingConsent { get; set; }   // "Loan Processing Consent" (mandatory)
+    public bool BureauConsent { get; set; }           // "Credit Bureau Consent" (mandatory)
+    public bool CommunicationConsent { get; set; }    // "Communication Consent" (optional)
+    public bool DeclarationAccepted { get; set; }     // bottom read-and-agree declaration (mandatory)
     public DateTimeOffset? ConsentCapturedAtUtc { get; set; }
+
+    /// <summary>Aadhaar eKYC authorisation – covered by the Loan Processing Consent.</summary>
+    public bool AadhaarConsent { get; set; }
 
     // --- Mobile ---
     public string MobileNumber { get; set; } = string.Empty;
