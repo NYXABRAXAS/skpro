@@ -11,13 +11,23 @@ suryoday-car-loan/
 ├── js/
 │   └── script.js         checkbox gating + LOS integration hooks
 └── assets/
-    ├── Background.jpg.jpeg   full-screen background
-    └── suryoday-logo.svg     header logo (swap with the official asset)
+    ├── Background.jpg.jpeg          full-screen background
+    ├── suryoday-logo.svg            header logo (swap with the official asset)
+    └── vendor/                      bundled libraries – NO internet required
+        ├── bootstrap/bootstrap.min.css
+        ├── bootstrap/bootstrap.bundle.min.js
+        └── bootstrap-icons/bootstrap-icons.css  (+ fonts/bootstrap-icons.woff2/.woff)
 ```
 
-Bootstrap 5 and Bootstrap Icons load from the jsDelivr CDN (see the `<link>`/`<script>`
-tags in `index.html`). To run fully offline, download those files into `assets/`
-and repoint the tags.
+### 100% offline
+
+There are **no CDN links and no external requests**. Bootstrap 5 and Bootstrap Icons are
+bundled under `assets/vendor/`. Open `index.html` (or serve the folder) on a machine with
+no internet and it renders exactly the same.
+
+The font stack is `Inter, system-ui, "Segoe UI", Arial, sans-serif` — no web-font download.
+Machines without Inter fall back to Segoe UI / Arial. To bundle Inter, drop its `.woff2`
+files in `assets/vendor/fonts/` and add `@font-face` rules at the top of `css/style.css`.
 
 ## Run / preview
 

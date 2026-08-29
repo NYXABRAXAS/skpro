@@ -5,22 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Welcome to Suryoday Car Loan</title>
 
-  <!-- Bootstrap 5 -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-    rel="stylesheet" />
+  <!-- Bootstrap 5 (vendored – works fully offline) -->
+  <link rel="stylesheet" href="assets/vendor/bootstrap/bootstrap.min.css" />
 
-  <!-- Bootstrap Icons -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-    rel="stylesheet" />
+  <!-- Bootstrap Icons (vendored – fonts in assets/vendor/bootstrap-icons/fonts/) -->
+  <link rel="stylesheet" href="assets/vendor/bootstrap-icons/bootstrap-icons.css" />
 
-  <!-- Optional web font (falls back to Arial / system-ui if it fails to load) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet" />
+  <!-- Font: the CSS uses an "Inter, ... , Arial, sans-serif" stack; if Inter is not
+       installed the page falls back to Segoe UI / system-ui / Arial. To bundle Inter,
+       drop its .woff2 files in assets/vendor/fonts/ and add @font-face rules to style.css. -->
 
   <!-- Page styles -->
   <link rel="stylesheet" href="css/style.css" />
@@ -246,8 +239,8 @@
     </main>
   </div>
 
-  <!-- Bootstrap bundle (Popper + JS) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Bootstrap bundle (Popper + JS) – vendored -->
+  <script src="assets/vendor/bootstrap/bootstrap.bundle.min.js"></script>
 
   <!-- Page script -->
   <script src="js/script.js"></script>
