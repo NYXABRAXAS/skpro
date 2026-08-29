@@ -6,9 +6,13 @@
    ========================================================================== */
 :root {
   --kiosk-bg-image:    url('../images/car-loan-bg.jpg');
-  --kiosk-bg-position:  left center;   /* keep the family / car anchored to the left */
-  --kiosk-bg-size:      cover;
-  --kiosk-split:        54%;           /* how much width the photo takes on desktop */
+  --kiosk-bg-position:  left center;   /* family / car anchored left */
+  --kiosk-bg-size:      cover;         /* photo fills the whole screen */
+  /* Very light scrim – just adds depth on the left; the photo stays fully visible. */
+  --kiosk-scrim: linear-gradient(90deg,
+      rgba(18,26,44,.30) 0%,
+      rgba(18,26,44,.10) 20%,
+      rgba(18,26,44,0)   42%);
 }
 
 .kiosk-body {
@@ -16,7 +20,11 @@
   display: flex;
   flex-direction: column;
   color: var(--dark);
-  background-color: var(--light-bg);
+  background-color: #12203f;
+  background-image: var(--kiosk-scrim), var(--kiosk-bg-image);
+  background-position: left center, var(--kiosk-bg-position);
+  background-size: cover, var(--kiosk-bg-size);
+  background-repeat: no-repeat, no-repeat;
 }
 
 /* Top bar */
@@ -40,34 +48,24 @@
   white-space: nowrap;
 }
 
-/* Main area – clean vertical split: photo fills the left, solid panel + card on the right */
+/* Main area – card sits to the right so the family photo stays visible */
 .kiosk-main {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding: 24px clamp(20px, 5vw, 80px);
-  background-image:
-    linear-gradient(90deg,
-      rgba(0,0,0,0) 0,
-      rgba(0,0,0,0) calc(var(--kiosk-split) - 1px),
-      var(--light-bg) var(--kiosk-split),
-      var(--light-bg) 100%),
-    var(--kiosk-bg-image);
-  background-position: center, var(--kiosk-bg-position);
-  background-size: cover, var(--kiosk-bg-size);
-  background-repeat: no-repeat, no-repeat;
+  padding: 22px clamp(20px, 7vw, 100px);
 }
 
 .kiosk-card {
   width: 100%;
-  max-width: 520px;
+  max-width: 540px;
   max-height: calc(100vh - 140px);
   overflow-y: auto;
-  background: #fff;
-  border-radius: 22px;
-  box-shadow: 0 24px 60px rgba(15, 27, 63, .22);
-  padding: 26px clamp(20px, 2.6vw, 38px);
+  background: rgba(255, 255, 255, .97);
+  border-radius: 24px;
+  box-shadow: 0 30px 70px rgba(15, 27, 63, .30);
+  padding: 28px clamp(20px, 3vw, 40px);
   text-align: center;
 }
 
@@ -183,28 +181,21 @@
   font-size: .82rem;
 }
 
-/* Tablet / phone – no split; photo is a full-bleed backdrop under a dark wash,
-   with the card centred on top. */
+/* Tablet / small desktop – centre the card, wash the whole photo for contrast */
 @media (max-width: 991.98px) {
-  .kiosk-main {
-    justify-content: center;
-    padding: 26px 16px;
-    background-image:
-      linear-gradient(180deg, rgba(16,22,38,.55), rgba(16,22,38,.62)),
-      var(--kiosk-bg-image);
-    background-position: center, center center;
-    background-size: cover, cover;
+  .kiosk-body {
+    --kiosk-scrim: linear-gradient(180deg, rgba(18,26,44,.45), rgba(18,26,44,.55));
   }
+  .kiosk-main { justify-content: center; padding: 28px 18px; }
 }
 
 @media (max-width: 560px) {
   .kiosk-topbar { padding: 12px 16px; }
   .kiosk-topbar .kiosk-logo { height: 38px; }
   .kiosk-topbar .product-tag { font-size: .82rem; padding: 5px 12px; }
-  .kiosk-main { padding: 18px 12px; }
-  .kiosk-card { padding: 24px 16px; border-radius: 18px; }
+  .kiosk-card { padding: 26px 18px; border-radius: 18px; }
 
-  /* stack the two choice buttons tightly – no giant flex-grow gap */
+  /* stack the choice buttons tightly – no flex-grow gap */
   .kiosk-options { flex-direction: column; flex-wrap: nowrap; gap: 12px; }
   .kiosk-options form { flex: 0 0 auto; width: 100%; }
 
