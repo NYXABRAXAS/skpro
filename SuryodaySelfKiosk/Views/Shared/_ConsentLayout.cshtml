@@ -22,9 +22,9 @@
 
     @RenderBody()
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
-    <script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+    @* No jQuery unobtrusive validation here: the [Range(bool,"true","true")] consent
+       rules are enforced server-side, and consent.js handles the Proceed gating.
+       (Unobtrusive turns that rule into a numeric range check that fails on "true".) *@
     <script src="~/js/consent.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
