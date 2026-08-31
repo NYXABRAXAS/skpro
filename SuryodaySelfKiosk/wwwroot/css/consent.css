@@ -247,6 +247,14 @@ body.sy-consent-body::before {
 .sy-link { color: var(--sy-blue); font-weight: 600; text-decoration: underline; }
 .sy-link:hover { color: var(--sy-orange); }
 
+.sy-returning {
+  margin: -6px 0 20px;
+  font-size: .85rem;
+  color: var(--sy-text-soft);
+}
+.sy-returning a { color: var(--sy-blue); font-weight: 700; text-decoration: underline; }
+.sy-returning a:hover { color: var(--sy-orange); }
+
 .sy-error {
   background: #fbeaea; color: #b3261e; border: 1px solid rgba(179,38,30,.25);
   border-radius: var(--sy-radius-sm); padding: 12px 16px; margin-bottom: 16px;

@@ -1,0 +1,173 @@
+@model MyApplicationsViewModel
+@{
+    ViewData["Title"] = "My Applications";
+    ViewData["EnableTimeout"] = false;
+    var remainingResends = Model.MaxOtpResendAttempts - Model.OtpResendCount;
+    string When(DateTimeOffset d) => d.ToLocalTime().ToString("dd MMM yyyy, HH:mm");
+    string INR(decimal v) => "₹ " + v.ToString("#,##0", System.Globalization.CultureInfo.GetCultureInfo("en-IN"));
+}
+
+<div class="card-surface">
+@if (!Model.Authenticated && !Model.OtpSent)
+{
+    <h1 class="page-title">My Applications</h1>
+    <p class="page-subtitle">Verify your mobile number to see your submitted applications and drafts.</p>
+
+    <form method="post" action="/car-loan/my-applications/send">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="field">
+            <label for="MobileNumber">Enter 10 Digit Mobile Number</label>
+            <input class="input" id="MobileNumber" name="MobileNumber" inputmode="numeric" data-numeric="10"
+                   autocomplete="tel-national" value="@Model.Mobile.MobileNumber" placeholder="9876543210" />
+        </div>
+        <div class="btn-row">
+            <button type="submit" class="btn btn-cta">Send OTP</button>
+        </div>
+    </form>
+
+    <a class="back-link" href="/car-loan/consent">&larr; Back to application</a>
+}
+else if (!Model.Authenticated)
+{
+    <h1 class="page-title">My Applications</h1>
+    <p class="page-subtitle">Enter the OTP sent to <strong>@Model.MaskedMobile</strong>.</p>
+
+    @if (TempData["OtpError"] is string te)
+    {
+        <div class="alert alert-danger">@te</div>
+    }
+    @if (Model.MockMode)
+    {
+        <div class="info-panel">Demo OTP: <strong>@Model.MockOtp</strong></div>
+    }
+
+    <form method="post" action="/car-loan/my-applications/verify">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <input type="hidden" id="Otp" name="Otp" value="" />
+        <div class="field">
+            <label>Enter OTP</label>
+            <div class="otp-inputs" data-otp>
+                @for (var i = 0; i < 6; i++)
+                {
+                    <input data-otp-box inputmode="numeric" maxlength="1" aria-label="OTP digit @(i + 1)" />
+                }
+            </div>
+        </div>
+        <div class="btn-row">
+            <button type="submit" class="btn btn-cta">Verify</button>
+        </div>
+    </form>
+
+    <p class="resend-line"><span data-resend-label>Resend OTP in 30 seconds</span></p>
+    <form method="post" action="/car-loan/my-applications/resend" style="text-align:center;">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-ghost" data-resend-btn data-resend-seconds="30"
+                @(remainingResends <= 0 ? "disabled" : "")>Resend OTP</button>
+    </form>
+    <form method="post" action="/car-loan/my-applications/change" style="text-align:center;">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-ghost">Change mobile number</button>
+    </form>
+}
+else
+{
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+        <div>
+            <h1 class="page-title" style="margin-bottom:2px;">Your Car Loan Applications</h1>
+            <p class="page-subtitle" style="margin:0;">Mobile @Model.MaskedMobile</p>
+        </div>
+        <form method="post" action="/car-loan/my-applications/change">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-ghost" style="min-height:38px;">Not you?</button>
+        </form>
+    </div>
+
+    <form method="post" action="/car-loan/my-applications/new" style="margin:16px 0 6px;">
+        @Html.AntiForgeryToken()
+        <div class="btn-row"><button type="submit" class="btn btn-cta">Start a New Application</button></div>
+    </form>
+
+    @if (Model.Drafts.Count == 0 && Model.Submitted.Count == 0 && Model.Closed.Count == 0)
+    {
+        <div class="info-panel" style="text-align:center;margin-top:14px;">
+            You don&rsquo;t have any earlier applications on this mobile number yet.
+        </div>
+    }
+
+    @if (Model.Drafts.Count > 0)
+    {
+        <h2 style="font-size:1rem;color:var(--primary-blue);margin:22px 0 10px;">Continue where you left off</h2>
+        @foreach (var a in Model.Drafts)
+        {
+            <div class="review-group">
+                <h3>
+                    @a.VehicleSummary()
+                    <span style="font-weight:600;color:var(--warning);">Draft</span>
+                </h3>
+                <dl>
+                    <div class="row2"><dt>Started</dt><dd>@When(a.CreatedAtUtc)</dd></div>
+                    <div class="row2"><dt>Last updated</dt><dd>@When(a.LastUpdatedUtc)</dd></div>
+                    <div class="row2"><dt>You stopped at</dt><dd>@a.NextStepLabel()</dd></div>
+                    <div class="row2"><dt>Reference</dt><dd>@a.ApplicationId</dd></div>
+                </dl>
+                <div style="padding:0 16px 14px;">
+                    <form method="post" action="/car-loan/my-applications/resume">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@a.ApplicationId" />
+                        <button type="submit" class="btn btn-primary">Resume this application</button>
+                    </form>
+                </div>
+            </div>
+        }
+    }
+
+    @if (Model.Submitted.Count > 0)
+    {
+        <h2 style="font-size:1rem;color:var(--primary-blue);margin:22px 0 10px;">Submitted applications</h2>
+        @foreach (var a in Model.Submitted)
+        {
+            <div class="review-group">
+                <h3>
+                    @a.VehicleSummary()
+                    <span style="font-weight:600;color:var(--success);">@a.StatusLabel()</span>
+                </h3>
+                <dl>
+                    <div class="row2"><dt>Reference No.</dt><dd>@a.LosLeadId</dd></div>
+                    <div class="row2"><dt>Submitted</dt><dd>@When(a.LastUpdatedUtc)</dd></div>
+                    @if (a.RequiredLoanAmount > 0)
+                    {
+                        <div class="row2"><dt>Requested</dt><dd>@INR(a.RequiredLoanAmount)</dd></div>
+                    }
+                    @if (a.EligibleAmount > 0)
+                    {
+                        <div class="row2"><dt>Eligible amount</dt><dd>@INR(a.EligibleAmount)</dd></div>
+                    }
+                    @if (!string.IsNullOrEmpty(a.AllocationType))
+                    {
+                        <div class="row2"><dt>Allocation</dt><dd>@(a.AllocationType == AllocationTypes.Employee ? $"Sales Employee ({a.BankEmployeeName})" : "ASM (normal allocation)")</dd></div>
+                    }
+                </dl>
+            </div>
+        }
+    }
+
+    @if (Model.Closed.Count > 0)
+    {
+        <h2 style="font-size:1rem;color:var(--muted);margin:22px 0 10px;">Closed applications</h2>
+        @foreach (var a in Model.Closed)
+        {
+            <div class="review-group">
+                <h3>@a.VehicleSummary() <span style="font-weight:600;color:var(--muted);">@a.StatusLabel()</span></h3>
+                <dl>
+                    <div class="row2"><dt>Started</dt><dd>@When(a.CreatedAtUtc)</dd></div>
+                    <div class="row2"><dt>Reference</dt><dd>@a.ApplicationId</dd></div>
+                </dl>
+            </div>
+        }
+    }
+
+    <a class="back-link" href="/">&larr; Home</a>
+}
+</div>

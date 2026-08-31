@@ -23,6 +23,7 @@ builder.Services.AddSession(options =>
 });
 
 // --- Application services ---------------------------------------------------
+builder.Services.AddSingleton<IApplicationRepository, InMemoryApplicationRepository>();
 builder.Services.AddScoped<ApplicationStateService>();
 builder.Services.AddSingleton<IQrCodeService, QrCodeService>();
 

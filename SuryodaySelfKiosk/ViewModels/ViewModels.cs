@@ -35,3 +35,33 @@ public class StepViewModel
     public int SessionTimeoutSeconds { get; set; }
     public string[] MockScenarios { get; set; } = Models.MockScenarios.All;
 }
+
+/// <summary>Session-persisted auth state for the "My Applications" mobile-OTP gate.</summary>
+public class MyApplicationsAuth
+{
+    public string Mobile { get; set; } = string.Empty;
+    public bool Verified { get; set; }
+    public bool OtpSent { get; set; }
+    public DateTimeOffset? OtpSentAtUtc { get; set; }
+    public int OtpResendCount { get; set; }
+}
+
+public class MyApplicationsViewModel
+{
+    public bool Authenticated { get; set; }
+    public bool OtpSent { get; set; }
+    public string MaskedMobile { get; set; } = string.Empty;
+
+    public MobileInput Mobile { get; set; } = new();
+    public OtpInput Otp { get; set; } = new();
+
+    public List<CarLoanApplication> Drafts { get; set; } = new();
+    public List<CarLoanApplication> Submitted { get; set; } = new();
+    public List<CarLoanApplication> Closed { get; set; } = new();
+
+    public bool MockMode { get; set; }
+    public string? MockOtp { get; set; }
+    public int OtpExpirySeconds { get; set; }
+    public int MaxOtpResendAttempts { get; set; }
+    public int OtpResendCount { get; set; }
+}

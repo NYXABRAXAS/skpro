@@ -37,6 +37,23 @@ Bank Employee Assistance → LOS Lead Creation → Success`
 `/car-loan/start` (New/Used landing) still exists — the kiosk touch buttons use it to
 pre-select the vehicle type before Consent; QR customers pick it on the Vehicle step.
 
+### My Applications
+
+`/car-loan/my-applications` — a returning customer verifies their **mobile number** (OTP)
+and sees:
+
+- **Drafts** — journeys they started but didn't finish, with the step they stopped at and
+  a **Resume** button that drops them back exactly where they left off.
+- **Submitted** — with reference no., status (approved in principle / under credit review),
+  amounts and allocation.
+- **Closed** — applications they exited with "Not Interested".
+
+Plus a **Start a New Application** button. Entry links sit on the kiosk home and the
+consent screen. Storage is `InMemoryApplicationRepository` (a singleton, keyed by
+`ApplicationId`, filtered by verified mobile) — lost on restart; swap for a real
+repository in production. An application is saved to history the moment the customer
+verifies their mobile in the journey.
+
 ### Mock credentials / data (shown only when `SelfKiosk:MockMode = true`)
 
 | Field            | Value            |

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using SuryodaySelfKiosk.Configuration;
@@ -21,6 +22,7 @@ public class CarLoanController : Controller
     private readonly IBankEmployeeService _employee;
     private readonly ILosService _los;
     private readonly IAuditService _audit;
+    private readonly IApplicationRepository _repo;
 
     public CarLoanController(
         IOptions<SelfKioskOptions> options,
@@ -32,7 +34,8 @@ public class CarLoanController : Controller
         IBreService bre,
         IBankEmployeeService employee,
         ILosService los,
-        IAuditService audit)
+        IAuditService audit,
+        IApplicationRepository repo)
     {
         _cfg = options.Value;
         _state = state;
@@ -44,6 +47,7 @@ public class CarLoanController : Controller
         _employee = employee;
         _los = los;
         _audit = audit;
+        _repo = repo;
     }
 
     // --------------------------------------------------------------------
@@ -708,5 +712,158 @@ public class CarLoanController : Controller
     {
         _state.Reset();
         return RedirectToAction(nameof(Start));
+    }
+
+    // ====================================================================
+    // MY APPLICATIONS – a returning customer verifies their mobile and can
+    // see submitted applications + resume drafts, or start a new one.
+    // ====================================================================
+    private const string MyAppsAuthKey = "MyAppsAuth";
+
+    private MyApplicationsAuth GetAuth()
+    {
+        var json = HttpContext.Session.GetString(MyAppsAuthKey);
+        return string.IsNullOrEmpty(json)
+            ? new MyApplicationsAuth()
+            : JsonSerializer.Deserialize<MyApplicationsAuth>(json) ?? new MyApplicationsAuth();
+    }
+
+    private void SaveAuth(MyApplicationsAuth auth) =>
+        HttpContext.Session.SetString(MyAppsAuthKey, JsonSerializer.Serialize(auth));
+
+    private MyApplicationsViewModel BuildMyApps(MyApplicationsAuth auth)
+    {
+        var vm = new MyApplicationsViewModel
+        {
+            Authenticated = auth.Verified,
+            OtpSent = auth.OtpSent && !auth.Verified,
+            MaskedMobile = MaskMobile(auth.Mobile),
+            MockMode = _cfg.MockMode,
+            MockOtp = _cfg.MockMode ? _cfg.MockOtp : null,
+            OtpExpirySeconds = _cfg.OtpExpirySeconds,
+            MaxOtpResendAttempts = _cfg.MaxOtpResendAttempts,
+            OtpResendCount = auth.OtpResendCount
+        };
+
+        if (auth.Verified)
+        {
+            var all = _repo.GetByMobile(auth.Mobile);
+            vm.Drafts = all.Where(a => a.Kind() == ApplicationKind.Draft).ToList();
+            vm.Submitted = all.Where(a => a.Kind() == ApplicationKind.Submitted).ToList();
+            vm.Closed = all.Where(a => a.Kind() == ApplicationKind.Closed).ToList();
+        }
+        return vm;
+    }
+
+    [HttpGet("my-applications")]
+    public IActionResult MyApplications() => View(BuildMyApps(GetAuth()));
+
+    [HttpPost("my-applications/send")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> MyAppsSendOtp(MobileInput input)
+    {
+        if (!ModelState.IsValid)
+        {
+            var vm = BuildMyApps(GetAuth());
+            vm.Mobile = input;
+            return View(nameof(MyApplications), vm);
+        }
+
+        var result = await _otp.SendOtpAsync(input.MobileNumber);
+        if (!result.Success)
+        {
+            ModelState.AddModelError(string.Empty, result.CustomerMessage ?? "Unable to send OTP. Please try again.");
+            return View(nameof(MyApplications), BuildMyApps(GetAuth()));
+        }
+
+        SaveAuth(new MyApplicationsAuth
+        {
+            Mobile = input.MobileNumber,
+            OtpSent = true,
+            OtpSentAtUtc = DateTimeOffset.UtcNow,
+            OtpResendCount = 0
+        });
+        return RedirectToAction(nameof(MyApplications));
+    }
+
+    [HttpPost("my-applications/resend")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> MyAppsResendOtp()
+    {
+        var auth = GetAuth();
+        if (!auth.OtpSent || string.IsNullOrEmpty(auth.Mobile)) return RedirectToAction(nameof(MyApplications));
+
+        if (auth.OtpResendCount >= _cfg.MaxOtpResendAttempts)
+        {
+            TempData["OtpError"] = "You have reached the maximum number of OTP resend attempts. Please start again.";
+            return RedirectToAction(nameof(MyApplications));
+        }
+
+        await _otp.SendOtpAsync(auth.Mobile);
+        auth.OtpResendCount++;
+        auth.OtpSentAtUtc = DateTimeOffset.UtcNow;
+        SaveAuth(auth);
+        return RedirectToAction(nameof(MyApplications));
+    }
+
+    [HttpPost("my-applications/change")]
+    [ValidateAntiForgeryToken]
+    public IActionResult MyAppsChangeMobile()
+    {
+        HttpContext.Session.Remove(MyAppsAuthKey);
+        return RedirectToAction(nameof(MyApplications));
+    }
+
+    [HttpPost("my-applications/verify")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> MyAppsVerifyOtp(OtpInput input)
+    {
+        var auth = GetAuth();
+        if (!auth.OtpSent) return RedirectToAction(nameof(MyApplications));
+
+        var vm = BuildMyApps(auth);
+        vm.Otp = input;
+
+        if (!ModelState.IsValid) return View(nameof(MyApplications), vm);
+
+        var expiry = auth.OtpSentAtUtc?.AddSeconds(_cfg.OtpExpirySeconds);
+        if (expiry is null || DateTimeOffset.UtcNow > expiry)
+        {
+            ModelState.AddModelError(string.Empty, "OTP has expired. Please request a new OTP.");
+            return View(nameof(MyApplications), vm);
+        }
+
+        var result = await _otp.VerifyOtpAsync(auth.Mobile, input.Otp);
+        if (!result.Success)
+        {
+            ModelState.AddModelError(string.Empty, result.CustomerMessage ?? "Invalid OTP. Please try again.");
+            return View(nameof(MyApplications), vm);
+        }
+
+        auth.Verified = true;
+        SaveAuth(auth);
+        return RedirectToAction(nameof(MyApplications));
+    }
+
+    [HttpPost("my-applications/resume")]
+    [ValidateAntiForgeryToken]
+    public IActionResult ResumeApplication(string id)
+    {
+        var auth = GetAuth();
+        if (!auth.Verified) return RedirectToAction(nameof(MyApplications));
+
+        var app = _repo.GetById(id);
+        if (app is null || app.MobileNumber != auth.Mobile) return RedirectToAction(nameof(MyApplications));
+
+        var loaded = _state.Resume(id);
+        return loaded is null ? RedirectToAction(nameof(MyApplications)) : Redirect(loaded.ResumePath());
+    }
+
+    [HttpPost("my-applications/new")]
+    [ValidateAntiForgeryToken]
+    public IActionResult NewApplication()
+    {
+        _state.StartNew();
+        return RedirectToAction(nameof(Consent));
     }
 }

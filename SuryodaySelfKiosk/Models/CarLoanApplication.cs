@@ -10,6 +10,7 @@ public class CarLoanApplication
     public string ApplicationId { get; set; } = string.Empty;
     public string JourneyStep { get; set; } = JourneySteps.Start;
     public DateTimeOffset CreatedAtUtc { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset LastUpdatedUtc { get; set; } = DateTimeOffset.UtcNow;
 
     // --- Consent ---
     public bool LoanProcessingConsent { get; set; }   // "Loan Processing Consent" (mandatory)

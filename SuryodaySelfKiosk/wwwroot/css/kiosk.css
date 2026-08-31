@@ -153,6 +153,15 @@
 .kiosk-qr .scan-help { color: var(--muted); margin: 10px 0 3px; font-size: .88rem; }
 .kiosk-qr .journey-url { font-size: .7rem; color: var(--muted); word-break: break-all; margin: 0; }
 
+.kiosk-returning {
+  margin: 16px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  font-size: .86rem;
+  color: var(--muted);
+}
+.kiosk-returning a { color: var(--primary-blue); font-weight: 700; }
+
 .kiosk-start-btn {
   display: inline-block;
   margin-top: 16px;
