@@ -2,27 +2,29 @@ namespace SuryodaySelfKiosk.Models;
 
 public enum ApplicationKind { Draft, Submitted, Closed }
 
-/// <summary>Presentation helpers for the "My Applications" screen.</summary>
+/// <summary>Presentation + resume helpers for the "My Applications" screen.</summary>
 public static class ApplicationStatusExtensions
 {
     public static ApplicationKind Kind(this CarLoanApplication a)
     {
         if (!string.IsNullOrEmpty(a.LosLeadId)) return ApplicationKind.Submitted;
         if (a.CustomerDecision == CustomerDecisions.NotInterested) return ApplicationKind.Closed;
+        if (a.BreEvaluated && a.Decision == Decisions.NotEligible) return ApplicationKind.Closed;
         return ApplicationKind.Draft;
     }
 
     /// <summary>Customer-friendly status line.</summary>
-    public static string StatusLabel(this CarLoanApplication a) => a.Kind() switch
+    public static string StatusLabel(this CarLoanApplication a) => a switch
     {
-        ApplicationKind.Submitted when a.ReferStatus => "Submitted — under credit review",
-        ApplicationKind.Submitted when a.Decision == Decisions.Eligible => "Submitted — approved in principle",
-        ApplicationKind.Submitted => "Submitted",
-        ApplicationKind.Closed => "Closed — not interested",
+        { LosLeadId.Length: > 0, ReferStatus: true } => "Submitted — under credit review",
+        { LosLeadId.Length: > 0 } when a.Decision == Decisions.Eligible => "Submitted — approved in principle",
+        { LosLeadId.Length: > 0 } => "Submitted",
+        { CustomerDecision: CustomerDecisions.NotInterested } => "Closed — not interested",
+        { BreEvaluated: true } when a.Decision == Decisions.NotEligible => "Not eligible at this time",
         _ => "In progress"
     };
 
-    /// <summary>Where the customer left off (for a draft).</summary>
+    /// <summary>Where the customer left off (label for a draft).</summary>
     public static string NextStepLabel(this CarLoanApplication a)
     {
         if (!a.LoanProcessingConsent || !a.BureauConsent || !a.DeclarationAccepted) return "Consent & Declarations";
@@ -32,7 +34,9 @@ public static class ApplicationStatusExtensions
         if (a.VehicleCost <= 0) return "Vehicle & loan details";
         if (!a.BureauChecked) return "Review & submit for eligibility";
         if (!a.BreEvaluated) return "Eligibility check";
-        return "Your decision";
+        if (a.CustomerDecision != CustomerDecisions.Proceed) return "Your decision — proceed or not";
+        if (string.IsNullOrEmpty(a.AllocationType)) return "Bank employee assistance";
+        return "Final submission";
     }
 
     /// <summary>The route to send the customer to when they resume a draft.</summary>
@@ -45,7 +49,10 @@ public static class ApplicationStatusExtensions
         if (a.VehicleCost <= 0) return "/car-loan/vehicle";
         if (!a.BureauChecked) return "/car-loan/review";
         if (!a.BreEvaluated) return "/car-loan/eligibility";
-        return "/car-loan/eligibility"; // result page is served from the eligibility action once BreEvaluated
+        // BRE done – result page shows Proceed / Not Interested
+        if (a.CustomerDecision != CustomerDecisions.Proceed) return "/car-loan/eligibility";
+        if (string.IsNullOrEmpty(a.AllocationType)) return "/car-loan/employee-assistance";
+        return "/car-loan/submit";
     }
 
     public static string VehicleSummary(this CarLoanApplication a)
@@ -53,6 +60,6 @@ public static class ApplicationStatusExtensions
         var type = a.VehicleType == VehicleTypes.Used ? "Used" : a.VehicleType == VehicleTypes.New ? "New" : null;
         var parts = new[] { type, a.Manufacturer, a.Model }.Where(p => !string.IsNullOrWhiteSpace(p));
         var s = string.Join(" ", parts);
-        return string.IsNullOrWhiteSpace(s) ? "Car loan" : s + " car loan";
+        return string.IsNullOrWhiteSpace(s) ? "Car loan application" : s + " car loan";
     }
 }

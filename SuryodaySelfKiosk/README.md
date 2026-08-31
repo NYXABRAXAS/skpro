@@ -39,20 +39,26 @@ pre-select the vehicle type before Consent; QR customers pick it on the Vehicle 
 
 ### My Applications
 
-`/car-loan/my-applications` — a returning customer verifies their **mobile number** (OTP)
-and sees:
+`/car-loan/my-applications` — a returning customer verifies their **Aadhaar** (OTP to the
+Aadhaar-registered mobile) and sees:
 
-- **Drafts** — journeys they started but didn't finish, with the step they stopped at and
-  a **Resume** button that drops them back exactly where they left off.
-- **Submitted** — with reference no., status (approved in principle / under credit review),
-  amounts and allocation.
-- **Closed** — applications they exited with "Not Interested".
+- **Drafts** — journeys they started but didn't finish, with the exact step they stopped at
+  (consent, PAN, "your decision — proceed or not", "bank employee assistance", …) and a
+  **Resume** button that drops them straight back on that screen.
+- **Submitted** — reference no., status (approved in principle / under credit review),
+  amounts, allocation.
+- **Closed** — exited with "Not Interested", or found "Not eligible".
 
 Plus a **Start a New Application** button. Entry links sit on the kiosk home and the
-consent screen. Storage is `InMemoryApplicationRepository` (a singleton, keyed by
-`ApplicationId`, filtered by verified mobile) — lost on restart; swap for a real
-repository in production. An application is saved to history the moment the customer
-verifies their mobile in the journey.
+consent screen.
+
+- Storage: `InMemoryApplicationRepository` (singleton, keyed by `ApplicationId`).
+- Customer key: `CarLoanApplication.AadhaarHash` — SHA-256 of the full Aadhaar, set at the
+  Aadhaar step; the raw Aadhaar is never stored. Lookups are by this hash.
+- An application enters history the moment the customer **verifies their Aadhaar** in the
+  journey — the first verification step — and every step transition after that updates it,
+  so a customer can always resume from wherever they stopped.
+- In-memory only → lost on restart; swap for a real repository in production.
 
 ### Mock credentials / data (shown only when `SelfKiosk:MockMode = true`)
 

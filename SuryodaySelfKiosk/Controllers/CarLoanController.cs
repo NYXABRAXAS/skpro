@@ -274,9 +274,10 @@ public class CarLoanController : Controller
             return View(nameof(Aadhaar), Build(app, JourneySteps.Aadhaar));
         }
 
-        // Store only the last 4 digits + mask. The full Aadhaar is never persisted.
+        // Store only the last 4 digits + mask + a one-way hash. The full Aadhaar is never persisted.
         app.AadhaarLast4 = input.AadhaarNumber[^4..];
         app.AadhaarMasked = $"XXXX XXXX {app.AadhaarLast4}";
+        app.AadhaarHash = CustomerKey.FromAadhaar(input.AadhaarNumber);
         app.RegisteredMobileMasked = result.Data ?? $"XXXXXX{app.AadhaarLast4}";
         app.AadhaarVerified = false;
         app.AadhaarOtpSent = true;
@@ -715,8 +716,8 @@ public class CarLoanController : Controller
     }
 
     // ====================================================================
-    // MY APPLICATIONS – a returning customer verifies their mobile and can
-    // see submitted applications + resume drafts, or start a new one.
+    // MY APPLICATIONS – a returning customer verifies their Aadhaar (OTP) and
+    // can see submitted applications + resume drafts, or start a new one.
     // ====================================================================
     private const string MyAppsAuthKey = "MyAppsAuth";
 
@@ -737,7 +738,8 @@ public class CarLoanController : Controller
         {
             Authenticated = auth.Verified,
             OtpSent = auth.OtpSent && !auth.Verified,
-            MaskedMobile = MaskMobile(auth.Mobile),
+            MaskedAadhaar = string.IsNullOrEmpty(auth.AadhaarLast4) ? "" : $"XXXX XXXX {auth.AadhaarLast4}",
+            RegisteredMobileMasked = auth.RegisteredMobileMasked,
             MockMode = _cfg.MockMode,
             MockOtp = _cfg.MockMode ? _cfg.MockOtp : null,
             OtpExpirySeconds = _cfg.OtpExpirySeconds,
@@ -747,7 +749,7 @@ public class CarLoanController : Controller
 
         if (auth.Verified)
         {
-            var all = _repo.GetByMobile(auth.Mobile);
+            var all = _repo.GetByAadhaarHash(auth.AadhaarHash);
             vm.Drafts = all.Where(a => a.Kind() == ApplicationKind.Draft).ToList();
             vm.Submitted = all.Where(a => a.Kind() == ApplicationKind.Submitted).ToList();
             vm.Closed = all.Where(a => a.Kind() == ApplicationKind.Closed).ToList();
@@ -760,25 +762,27 @@ public class CarLoanController : Controller
 
     [HttpPost("my-applications/send")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> MyAppsSendOtp(MobileInput input)
+    public async Task<IActionResult> MyAppsSendOtp(AadhaarInput input)
     {
         if (!ModelState.IsValid)
         {
-            var vm = BuildMyApps(GetAuth());
-            vm.Mobile = input;
-            return View(nameof(MyApplications), vm);
+            var vm = BuildMyApps(new MyApplicationsAuth());
+            return View(nameof(MyApplications), vm);   // never echo the entered Aadhaar back
         }
 
-        var result = await _otp.SendOtpAsync(input.MobileNumber);
+        var result = await _aadhaar.SendAadhaarOtpAsync(input.AadhaarNumber);
         if (!result.Success)
         {
-            ModelState.AddModelError(string.Empty, result.CustomerMessage ?? "Unable to send OTP. Please try again.");
-            return View(nameof(MyApplications), BuildMyApps(GetAuth()));
+            ModelState.AddModelError(string.Empty, result.CustomerMessage ?? "Aadhaar authentication failed. Please try again.");
+            return View(nameof(MyApplications), BuildMyApps(new MyApplicationsAuth()));
         }
 
+        var last4 = input.AadhaarNumber[^4..];
         SaveAuth(new MyApplicationsAuth
         {
-            Mobile = input.MobileNumber,
+            AadhaarLast4 = last4,
+            AadhaarHash = CustomerKey.FromAadhaar(input.AadhaarNumber),
+            RegisteredMobileMasked = result.Data ?? $"XXXXXX{last4}",
             OtpSent = true,
             OtpSentAtUtc = DateTimeOffset.UtcNow,
             OtpResendCount = 0
@@ -791,7 +795,7 @@ public class CarLoanController : Controller
     public async Task<IActionResult> MyAppsResendOtp()
     {
         var auth = GetAuth();
-        if (!auth.OtpSent || string.IsNullOrEmpty(auth.Mobile)) return RedirectToAction(nameof(MyApplications));
+        if (!auth.OtpSent || string.IsNullOrEmpty(auth.AadhaarLast4)) return RedirectToAction(nameof(MyApplications));
 
         if (auth.OtpResendCount >= _cfg.MaxOtpResendAttempts)
         {
@@ -799,7 +803,7 @@ public class CarLoanController : Controller
             return RedirectToAction(nameof(MyApplications));
         }
 
-        await _otp.SendOtpAsync(auth.Mobile);
+        await _aadhaar.SendAadhaarOtpAsync(new string('0', 8) + auth.AadhaarLast4);
         auth.OtpResendCount++;
         auth.OtpSentAtUtc = DateTimeOffset.UtcNow;
         SaveAuth(auth);
@@ -833,8 +837,8 @@ public class CarLoanController : Controller
             return View(nameof(MyApplications), vm);
         }
 
-        var result = await _otp.VerifyOtpAsync(auth.Mobile, input.Otp);
-        if (!result.Success)
+        var result = await _aadhaar.VerifyAadhaarOtpAsync(auth.AadhaarLast4, input.Otp);
+        if (!result.Success || result.Data is null)
         {
             ModelState.AddModelError(string.Empty, result.CustomerMessage ?? "Invalid OTP. Please try again.");
             return View(nameof(MyApplications), vm);
@@ -853,7 +857,7 @@ public class CarLoanController : Controller
         if (!auth.Verified) return RedirectToAction(nameof(MyApplications));
 
         var app = _repo.GetById(id);
-        if (app is null || app.MobileNumber != auth.Mobile) return RedirectToAction(nameof(MyApplications));
+        if (app is null || app.AadhaarHash != auth.AadhaarHash) return RedirectToAction(nameof(MyApplications));
 
         var loaded = _state.Resume(id);
         return loaded is null ? RedirectToAction(nameof(MyApplications)) : Redirect(loaded.ResumePath());

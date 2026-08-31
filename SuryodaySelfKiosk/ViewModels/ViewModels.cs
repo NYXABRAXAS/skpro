@@ -36,10 +36,12 @@ public class StepViewModel
     public string[] MockScenarios { get; set; } = Models.MockScenarios.All;
 }
 
-/// <summary>Session-persisted auth state for the "My Applications" mobile-OTP gate.</summary>
+/// <summary>Session-persisted auth state for the "My Applications" Aadhaar-OTP gate.</summary>
 public class MyApplicationsAuth
 {
-    public string Mobile { get; set; } = string.Empty;
+    public string AadhaarLast4 { get; set; } = string.Empty;
+    public string AadhaarHash { get; set; } = string.Empty;
+    public string RegisteredMobileMasked { get; set; } = string.Empty;
     public bool Verified { get; set; }
     public bool OtpSent { get; set; }
     public DateTimeOffset? OtpSentAtUtc { get; set; }
@@ -50,9 +52,10 @@ public class MyApplicationsViewModel
 {
     public bool Authenticated { get; set; }
     public bool OtpSent { get; set; }
-    public string MaskedMobile { get; set; } = string.Empty;
+    public string MaskedAadhaar { get; set; } = string.Empty;
+    public string RegisteredMobileMasked { get; set; } = string.Empty;
 
-    public MobileInput Mobile { get; set; } = new();
+    public AadhaarInput Aadhaar { get; set; } = new();
     public OtpInput Otp { get; set; } = new();
 
     public List<CarLoanApplication> Drafts { get; set; } = new();

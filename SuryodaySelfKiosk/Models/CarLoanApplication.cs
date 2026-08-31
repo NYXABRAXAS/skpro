@@ -33,6 +33,8 @@ public class CarLoanApplication
     public bool AadhaarVerified { get; set; }
     public string AadhaarMasked { get; set; } = string.Empty;
     public string AadhaarLast4 { get; set; } = string.Empty;
+    /// <summary>SHA-256 of the full Aadhaar – used to match a returning customer, never reversible.</summary>
+    public string AadhaarHash { get; set; } = string.Empty;
     /// <summary>Masked mobile number registered with the Aadhaar, e.g. "XXXXXX8377".</summary>
     public string RegisteredMobileMasked { get; set; } = string.Empty;
     public bool AadhaarOtpSent { get; set; }

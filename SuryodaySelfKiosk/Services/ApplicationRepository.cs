@@ -1,8 +1,17 @@
 using System.Collections.Concurrent;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using SuryodaySelfKiosk.Models;
 
 namespace SuryodaySelfKiosk.Services;
+
+/// <summary>Derives a stable, non-reversible key for a customer from their Aadhaar number.</summary>
+public static class CustomerKey
+{
+    public static string FromAadhaar(string aadhaarNumber) =>
+        Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes((aadhaarNumber ?? string.Empty).Trim())));
+}
 
 /// <summary>
 /// Prototype "customer applications" store. Keeps every application the customer
@@ -17,8 +26,8 @@ public interface IApplicationRepository
     void Upsert(CarLoanApplication application);
     CarLoanApplication? GetById(string applicationId);
 
-    /// <summary>Applications whose (verified) mobile number matches, newest first.</summary>
-    IReadOnlyList<CarLoanApplication> GetByMobile(string mobileNumber);
+    /// <summary>Applications belonging to a verified-Aadhaar customer, newest first.</summary>
+    IReadOnlyList<CarLoanApplication> GetByAadhaarHash(string aadhaarHash);
 }
 
 public class InMemoryApplicationRepository : IApplicationRepository
@@ -38,12 +47,12 @@ public class InMemoryApplicationRepository : IApplicationRepository
     public CarLoanApplication? GetById(string applicationId) =>
         _store.TryGetValue(applicationId, out var app) ? app : null;
 
-    public IReadOnlyList<CarLoanApplication> GetByMobile(string mobileNumber)
+    public IReadOnlyList<CarLoanApplication> GetByAadhaarHash(string aadhaarHash)
     {
-        if (string.IsNullOrWhiteSpace(mobileNumber)) return Array.Empty<CarLoanApplication>();
+        if (string.IsNullOrWhiteSpace(aadhaarHash)) return Array.Empty<CarLoanApplication>();
 
         return _store.Values
-            .Where(a => a.MobileVerified && a.MobileNumber == mobileNumber)
+            .Where(a => a.AadhaarVerified && a.AadhaarHash == aadhaarHash)
             .OrderByDescending(a => a.LastUpdatedUtc)
             .ToList();
     }

@@ -11,15 +11,21 @@
 @if (!Model.Authenticated && !Model.OtpSent)
 {
     <h1 class="page-title">My Applications</h1>
-    <p class="page-subtitle">Verify your mobile number to see your submitted applications and drafts.</p>
+    <p class="page-subtitle">Verify your Aadhaar to see your submitted applications and any drafts you haven&rsquo;t finished.</p>
+
+    @if (Model.MockMode)
+    {
+        <div class="info-panel">Demo mode: enter any 12 digit number (e.g. <strong>1234 1234 1234</strong>).</div>
+    }
 
     <form method="post" action="/car-loan/my-applications/send">
         @Html.AntiForgeryToken()
         <div asp-validation-summary="All" class="text-danger"></div>
         <div class="field">
-            <label for="MobileNumber">Enter 10 Digit Mobile Number</label>
-            <input class="input" id="MobileNumber" name="MobileNumber" inputmode="numeric" data-numeric="10"
-                   autocomplete="tel-national" value="@Model.Mobile.MobileNumber" placeholder="9876543210" />
+            <label for="AadhaarNumber">Enter Aadhaar Number</label>
+            <input class="input masked" id="AadhaarNumber" name="AadhaarNumber" inputmode="numeric" data-numeric="12"
+                   autocomplete="off" placeholder="XXXX XXXX XXXX" />
+            <span class="hint">An OTP will be sent to the mobile number registered with your Aadhaar. Your Aadhaar is never stored in full.</span>
         </div>
         <div class="btn-row">
             <button type="submit" class="btn btn-cta">Send OTP</button>
@@ -31,7 +37,10 @@
 else if (!Model.Authenticated)
 {
     <h1 class="page-title">My Applications</h1>
-    <p class="page-subtitle">Enter the OTP sent to <strong>@Model.MaskedMobile</strong>.</p>
+    <p class="page-subtitle">
+        Enter the OTP sent to the mobile number registered with your Aadhaar
+        (<strong>@Model.RegisteredMobileMasked</strong>).
+    </p>
 
     @if (TempData["OtpError"] is string te)
     {
@@ -76,7 +85,7 @@ else
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
         <div>
             <h1 class="page-title" style="margin-bottom:2px;">Your Car Loan Applications</h1>
-            <p class="page-subtitle" style="margin:0;">Mobile @Model.MaskedMobile</p>
+            <p class="page-subtitle" style="margin:0;">Aadhaar @Model.MaskedAadhaar</p>
         </div>
         <form method="post" action="/car-loan/my-applications/change">
             @Html.AntiForgeryToken()
@@ -92,7 +101,8 @@ else
     @if (Model.Drafts.Count == 0 && Model.Submitted.Count == 0 && Model.Closed.Count == 0)
     {
         <div class="info-panel" style="text-align:center;margin-top:14px;">
-            You don&rsquo;t have any earlier applications on this mobile number yet.
+            You don&rsquo;t have any earlier applications on this Aadhaar yet.
+            Tap <strong>Start a New Application</strong> above to begin.
         </div>
     }
 
