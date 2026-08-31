@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Car Loan QR Code Generator · Suryoday Small Finance Bank</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<header class="sq-header">
+  <div class="sq-header__inner">
+    <img src="assets/suryoday-logo.svg" alt="Suryoday Small Finance Bank" class="sq-logo" />
+    <span class="sq-tag">Car Loan · QR Code Generator</span>
+  </div>
+</header>
+
+<main class="sq-main">
+  <p class="sq-intro">
+    Paste the Car Loan journey URL provided by the bank, generate the QR code, then
+    download it as <strong>PNG</strong> (for screens / kiosks) or <strong>SVG</strong>
+    (for print &amp; posters — scales to any size without blur).
+  </p>
+
+  <div class="sq-grid">
+    <!-- ============ CONTROLS ============ -->
+    <section class="sq-panel" aria-labelledby="sqControlsHeading">
+      <h2 id="sqControlsHeading" class="sq-panel__title">1 · Settings</h2>
+
+      <div class="sq-field">
+        <label for="sqUrl">Car Loan journey URL <span class="sq-req">*</span></label>
+        <textarea id="sqUrl" rows="2" spellcheck="false"
+          placeholder="https://carloan.suryodaybank.com/car-loan/consent">https://your-bank-domain.com/car-loan/consent</textarea>
+        <p class="sq-hint">The exact URL the customer's phone should open after scanning.</p>
+      </div>
+
+      <div class="sq-row">
+        <div class="sq-field">
+          <label for="sqEcc">Error correction</label>
+          <select id="sqEcc">
+            <option value="L">L — 7% (smallest)</option>
+            <option value="M" selected>M — 15% (recommended)</option>
+            <option value="Q">Q — 25%</option>
+            <option value="H">H — 30% (most robust)</option>
+          </select>
+        </div>
+        <div class="sq-field">
+          <label for="sqSize">PNG size (px)</label>
+          <select id="sqSize">
+            <option>256</option>
+            <option>384</option>
+            <option selected>512</option>
+            <option>768</option>
+            <option>1024</option>
+            <option>2048</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="sq-row">
+        <div class="sq-field">
+          <label for="sqMargin">Quiet zone (modules)</label>
+          <select id="sqMargin">
+            <option>0</option>
+            <option>2</option>
+            <option selected>4</option>
+            <option>6</option>
+          </select>
+          <p class="sq-hint">Keep at least 4 — scanners need the white border.</p>
+        </div>
+        <div class="sq-field">
+          <label for="sqDark">Module colour</label>
+          <select id="sqDark">
+            <option value="#000000" selected>Black (best scan reliability)</option>
+            <option value="#1b3a8b">Suryoday blue</option>
+            <option value="#16357e">Suryoday blue (dark)</option>
+          </select>
+          <p class="sq-hint">Black on white scans most reliably. Coloured codes need good contrast &amp; print quality.</p>
+        </div>
+      </div>
+
+      <button id="sqGenerate" type="button" class="sq-btn sq-btn--primary">Generate QR Code</button>
+      <p id="sqError" class="sq-error" role="alert" hidden></p>
+    </section>
+
+    <!-- ============ RESULT ============ -->
+    <section class="sq-panel" aria-labelledby="sqResultHeading">
+      <h2 id="sqResultHeading" class="sq-panel__title">2 · Result</h2>
+
+      <div class="sq-preview" id="sqPreview">
+        <div class="sq-preview__placeholder">Your QR code will appear here</div>
+        <canvas id="sqCanvas" hidden></canvas>
+      </div>
+
+      <dl class="sq-meta" id="sqMeta" hidden>
+        <div><dt>Encoded URL</dt><dd id="sqMetaUrl"></dd></div>
+        <div><dt>Version / size</dt><dd id="sqMetaVersion"></dd></div>
+      </dl>
+
+      <div class="sq-downloads" id="sqDownloads" hidden>
+        <button id="sqDownloadPng" type="button" class="sq-btn sq-btn--outline">Download PNG</button>
+        <button id="sqDownloadSvg" type="button" class="sq-btn sq-btn--outline">Download SVG</button>
+      </div>
+
+      <p class="sq-hint sq-hint--center">Always test the downloaded code with a real phone camera before printing.</p>
+    </section>
+  </div>
+</main>
+
+<footer class="sq-footer">
+  Suryoday Small Finance Bank · A Bank of Smiles · QR utility — runs fully offline, no data leaves this page
+</footer>
+
+<script src="js/qrcode.min.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
