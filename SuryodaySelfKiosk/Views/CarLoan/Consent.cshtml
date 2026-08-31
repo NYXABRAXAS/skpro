@@ -61,11 +61,6 @@
                 </div>
             </section>
 
-            <p class="sy-returning">
-                Already started or applied before?
-                <a href="/car-loan/my-applications">View your applications</a>
-            </p>
-
             <!-- Three cards -->
             <div class="row g-3 g-lg-4">
 
@@ -197,10 +192,13 @@
 
         <!-- Footer -->
         <footer class="sy-modal__footer">
-            <p class="sy-footer-hint" id="syHint" role="status">
-                <i class="bi bi-exclamation-circle" aria-hidden="true"></i>
-                Please accept the mandatory consents to proceed.
-            </p>
+            <div class="sy-footer-left">
+                <p class="sy-footer-hint" id="syHint" role="status">
+                    <i class="bi bi-exclamation-circle" aria-hidden="true"></i>
+                    Please accept the mandatory consents to proceed.
+                </p>
+                <a class="sy-footer-secondary" href="/car-loan/my-applications">Returning customer? View your applications</a>
+            </div>
             <div class="sy-footer-actions">
                 <a href="/car-loan/start" class="sy-btn sy-btn--cancel">Cancel</a>
                 <button type="submit" class="sy-btn sy-btn--proceed" id="syProceed" disabled>Proceed</button>

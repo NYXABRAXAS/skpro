@@ -247,14 +247,6 @@ body.sy-consent-body::before {
 .sy-link { color: var(--sy-blue); font-weight: 600; text-decoration: underline; }
 .sy-link:hover { color: var(--sy-orange); }
 
-.sy-returning {
-  margin: -6px 0 20px;
-  font-size: .85rem;
-  color: var(--sy-text-soft);
-}
-.sy-returning a { color: var(--sy-blue); font-weight: 700; text-decoration: underline; }
-.sy-returning a:hover { color: var(--sy-orange); }
-
 .sy-error {
   background: #fbeaea; color: #b3261e; border: 1px solid rgba(179,38,30,.25);
   border-radius: var(--sy-radius-sm); padding: 12px 16px; margin-bottom: 16px;
@@ -269,9 +261,12 @@ body.sy-consent-body::before {
   border-top: 1px solid var(--sy-card-border);
   background: #fbfbfd;
 }
+.sy-footer-left { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .sy-footer-hint { margin: 0; font-size: .82rem; color: var(--sy-text-soft); display: inline-flex; align-items: center; gap: 6px; }
 .sy-footer-hint.is-hidden { visibility: hidden; }
 .sy-footer-hint i { color: var(--sy-orange); }
+.sy-footer-secondary { font-size: .78rem; color: var(--sy-text-soft); text-decoration: underline; }
+.sy-footer-secondary:hover { color: var(--sy-blue); }
 .sy-footer-actions { display: flex; gap: 12px; }
 
 .sy-btn {
