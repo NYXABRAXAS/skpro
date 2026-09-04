@@ -12,7 +12,7 @@ suryoday-car-loan-landing/
 │   └── app.js          wires the journey URL into the QR + buttons
 └── assets/
     ├── car-loan-bg.jpg     background photo
-    └── suryoday-logo.svg
+    └── suryoday-logo.png
 ```
 
 ## 1. Set the journey URL
@@ -20,11 +20,13 @@ suryoday-car-loan-landing/
 In `index.html`, edit the one attribute on `<body>`:
 
 ```html
-<body class="sk-body" data-journey-url="https://your-portal.example.com/car-loan/consent">
+<body class="sk-body" data-journey-url="https://appxuat.prohorizon.in:444/selfkiosk/loan/apply">
 ```
 
 That URL is used for **both** the QR code and the NEW / USED buttons
-(the buttons get `?type=New` / `?type=Used` appended so the portal can pre-select).
+(the buttons get `?type=New` / `?type=Used` appended so the portal can pre-select — remove
+that in `js/app.js` if not needed). Change the URL here when the portal address changes;
+no other file needs editing.
 
 ## 2. Background image — "show the whole photo"
 
@@ -51,7 +53,7 @@ and adjust `--sk-bg-color` to match its edges.
 ## 3. Brand colours
 
 Also in `:root`: `--sk-blue`, `--sk-orange`, `--sk-heading`. Change once, applies everywhere.
-The logo lives in `assets/suryoday-logo.svg` — replace with the official asset (keep the filename).
+The logo lives in `assets/suryoday-logo.png` — replace with the official asset (keep the filename).
 
 ## Notes
 
