@@ -6,13 +6,9 @@
    ========================================================================== */
 :root {
   --kiosk-bg-image:    url('../images/car-loan-bg.jpg');
-  --kiosk-bg-position:  left center;   /* family / car anchored left */
-  --kiosk-bg-size:      cover;         /* photo fills the whole screen */
-  /* Very light scrim – just adds depth on the left; the photo stays fully visible. */
-  --kiosk-scrim: linear-gradient(90deg,
-      rgba(18,26,44,.30) 0%,
-      rgba(18,26,44,.10) 20%,
-      rgba(18,26,44,0)   42%);
+  --kiosk-bg-position:  left center;
+  --kiosk-bg-size:      contain;      /* contain = the WHOLE photo is always visible; use 'cover' to fill & crop */
+  --kiosk-bg-color:     #f4f3f1;      /* fills the space around a 'contain' image; matches the showroom white */
 }
 
 .kiosk-body {
@@ -20,11 +16,11 @@
   display: flex;
   flex-direction: column;
   color: var(--dark);
-  background-color: #12203f;
-  background-image: var(--kiosk-scrim), var(--kiosk-bg-image);
-  background-position: left center, var(--kiosk-bg-position);
-  background-size: cover, var(--kiosk-bg-size);
-  background-repeat: no-repeat, no-repeat;
+  background-color: var(--kiosk-bg-color);
+  background-image: var(--kiosk-bg-image);
+  background-position: var(--kiosk-bg-position);
+  background-size: var(--kiosk-bg-size);
+  background-repeat: no-repeat;
 }
 
 /* Top bar */
@@ -190,10 +186,12 @@
   font-size: .82rem;
 }
 
-/* Tablet / small desktop – centre the card, wash the whole photo for contrast */
+/* Tablet / phone – a cropped, darkened backdrop reads better than a tiny contained image */
 @media (max-width: 991.98px) {
   .kiosk-body {
-    --kiosk-scrim: linear-gradient(180deg, rgba(18,26,44,.45), rgba(18,26,44,.55));
+    background-image: linear-gradient(180deg, rgba(16,22,38,.5), rgba(16,22,38,.58)), var(--kiosk-bg-image);
+    background-position: center, center;
+    background-size: cover, cover;
   }
   .kiosk-main { justify-content: center; padding: 28px 18px; }
 }

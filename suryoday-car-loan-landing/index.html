@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Check Your Car Loan Eligibility · Suryoday Small Finance Bank</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<!--
+  CONFIGURE:
+  data-journey-url  = the URL the customer's phone should open (QR target + button links).
+  Background image / fit / colours are in css/style.css (the :root block).
+-->
+<body class="sk-body" data-journey-url="https://your-portal.example.com/car-loan/consent">
+
+  <main class="sk-main">
+    <section class="sk-card" aria-labelledby="skHeading">
+      <img src="assets/suryoday-logo.svg" alt="Suryoday Small Finance Bank" class="sk-logo" />
+
+      <h1 id="skHeading">Check Your Car Loan Eligibility</h1>
+      <p class="sk-sub">Get started with your New or Used Car Loan application.</p>
+
+      <div class="sk-options">
+        <a class="sk-option" data-loan-type="New" href="#">
+          <span class="sk-option__ic" aria-hidden="true">&#128663;</span>
+          NEW CAR LOAN
+        </a>
+        <a class="sk-option" data-loan-type="Used" href="#">
+          <span class="sk-option__ic" aria-hidden="true">&#128665;</span>
+          USED CAR LOAN
+        </a>
+      </div>
+
+      <div class="sk-divider">OR SCAN TO CONTINUE ON YOUR PHONE</div>
+
+      <div class="sk-qr">
+        <div class="sk-qr__label">SCAN TO APPLY</div>
+        <div class="sk-qr__code" id="skQr" role="img" aria-label="QR code to open the car loan application"></div>
+        <p class="sk-qr__help">Scan with your mobile phone to continue your application</p>
+        <p class="sk-qr__url" id="skQrUrl"></p>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/qrcode.min.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
